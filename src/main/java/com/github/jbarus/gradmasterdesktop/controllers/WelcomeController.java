@@ -61,4 +61,13 @@ public class WelcomeController {
             openButton.setDisable(false);
         }
     }
+
+    public void deleteButtonClicked(ActionEvent actionEvent) {
+        ContextDisplayInfoDTO selectedItem = problemTable.getSelectionModel().getSelectedItem();
+        if (selectedItem != null) {
+            if(HTTPRequests.deleteContext(selectedItem.getId())){
+                problemTable.getItems().remove(selectedItem);
+            }
+        }
+    }
 }

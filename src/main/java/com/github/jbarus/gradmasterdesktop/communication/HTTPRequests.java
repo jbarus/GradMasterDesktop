@@ -11,6 +11,7 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 public class HTTPRequests {
     private static final String BASE_URL = "http://localhost:8080/api/";
@@ -33,5 +34,41 @@ public class HTTPRequests {
             e.printStackTrace();
         }
         return new ArrayList<>();
+    }
+
+    public static boolean deleteContext(UUID id) {
+
+        try{
+            URL obj = new URL(BASE_URL+"context-display-infos/"+id);
+            HttpURLConnection connection = (HttpURLConnection) obj.openConnection();
+            connection.setRequestMethod("DELETE");
+            int responseCode = connection.getResponseCode();
+
+            if (responseCode == HttpURLConnection.HTTP_OK) {
+                return true;
+            }
+
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+        return false;
+    }
+
+    public static boolean getUniversityEmployeeById(UUID id) {
+
+        try{
+            URL obj = new URL(BASE_URL+"context-display-infos/"+id);
+            HttpURLConnection connection = (HttpURLConnection) obj.openConnection();
+            connection.setRequestMethod("DELETE");
+            int responseCode = connection.getResponseCode();
+
+            if (responseCode == HttpURLConnection.HTTP_OK) {
+                return true;
+            }
+
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+        return false;
     }
 }

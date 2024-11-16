@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.TableColumn?>
+<?import javafx.scene.control.TableView?>
+<?import javafx.scene.layout.AnchorPane?>
+
+<AnchorPane prefHeight="800.0" prefWidth="1200.0" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.github.jbarus.gradmasterdesktop.controllers.DetailsController">
+   <children>
+      <TableView fx:id="universityEmployeeTable" layoutX="80.0" layoutY="102.0" prefHeight="238.0" prefWidth="492.0">
+        <columns>
+          <TableColumn fx:id="universityEmployeeFirstnameColumn" prefWidth="75.0" text="Imię" />
+          <TableColumn fx:id="universityEmployeeNameColumn" prefWidth="75.0" text="Nazwisko" />
+            <TableColumn fx:id="isHabilitatedColumn" prefWidth="85.0" text="Habilitowany" />
+            <TableColumn fx:id="timeslotStartColumn" prefWidth="95.0" text="Początek dostępności" />
+            <TableColumn fx:id="timeslotEndColumn" minWidth="0.0" prefWidth="79.0" text="Koniec dostępności" />
+            <TableColumn fx:id="prefferedCommitteeDurationColumn" prefWidth="82.0" text="Preferowany czas komisji" />
+        </columns>
+      </TableView>
+      <Button fx:id="editUniversityEmployeeButton" layoutX="520.0" layoutY="351.0" mnemonicParsing="false" onMouseClicked="#editUniversityEmployeeButtonClicked" text="Edytuj" />
+      <Button fx:id="uploadUniversityEmployeeFileButton" layoutX="80.0" layoutY="351.0" mnemonicParsing="false" onMouseClicked="#uploadUniversityEmployeeFileButtonClicked" text="Prześlij plik" />
+      <TableView fx:id="studentTable" layoutX="600.0" layoutY="102.0" prefHeight="238.0" prefWidth="219.0">
+        <columns>
+          <TableColumn fx:id="studentFirstnameColumn" prefWidth="107.0" text="Imię" />
+          <TableColumn fx:id="studentSecondNameColumn" prefWidth="111.0" text="Nazwisko" />
+        </columns>
+      </TableView>
+      <Label fx:id="nameLabel" layoutX="42.0" layoutY="29.0" text="Nazwa:" />
+      <Label fx:id="dateLabel" layoutX="42.0" layoutY="57.0" text="Data:" />
+      <Button fx:id="editStudentButton" layoutX="770.0" layoutY="352.0" mnemonicParsing="false" onMouseClicked="#editStudentButtonClicked" text="Edytuj" />
+      <Button fx:id="uploadStudentFileButton" layoutX="600.0" layoutY="351.0" mnemonicParsing="false" onMouseClicked="#uploadStudentFileButtonClicked" text="Prześlij plik" />
+      <TableView fx:id="solutionTable" layoutX="108.0" layoutY="477.0" prefHeight="200.0" prefWidth="200.0">
+        <columns>
+          <TableColumn fx:id="committeeNameColumn" prefWidth="199.0" text="Nazwa komisji" />
+        </columns>
+      </TableView>
+      <TableView fx:id="unassignedStudentTable" layoutX="373.0" layoutY="478.0" prefHeight="200.0" prefWidth="200.0">
+        <columns>
+          <TableColumn fx:id="unassignedUniversityEmployeeFirstnameColumn" prefWidth="97.0" text="Imię" />
+          <TableColumn fx:id="unassignedUniversityEmployeeSecondnameColumn" prefWidth="102.0" text="Nazwisko" />
+        </columns>
+      </TableView>
+      <TableView fx:id="unassignedUniversityEmployeeTable" layoutX="652.0" layoutY="477.0" prefHeight="200.0" prefWidth="200.0">
+        <columns>
+          <TableColumn fx:id="unassignedStudentFirstnameColumn" prefWidth="103.0" text="Imię" />
+          <TableColumn fx:id="unassignedStudentSecondnameColumn" prefWidth="96.0" text="Nazwisko" />
+        </columns>
+      </TableView>
+      <Label fx:id="numberOfPeoplePerCommitteeLabel" layoutX="903.0" layoutY="552.0" text="Label" />
+      <Label fx:id="calculationTimeDetails" layoutX="903.0" layoutY="585.0" text="Label" />
+      <Label fx:id="calculationDetailsLabel" layoutX="903.0" layoutY="521.0" text="Label" />
+      <Button fx:id="committeeDetailsButton" layoutX="108.0" layoutY="699.0" mnemonicParsing="false" onMouseClicked="#committeeDetailsButtonClicked" text="Szczegóły" />
+      <Button fx:id="deleteCommitteButton" layoutX="191.0" layoutY="699.0" mnemonicParsing="false" onMouseClicked="#deleteCommitteeButtonClicked" text="Usuń" />
+      <Button fx:id="refreshCommitteeButton" layoutX="247.0" layoutY="699.0" mnemonicParsing="false" onMouseClicked="#refreshCommitteeButtonClicked" text="Odśwież" />
+      <Button fx:id="startCalculationButton" layoutX="1004.0" layoutY="724.0" mnemonicParsing="false" onMouseClicked="#startCalculationButtonClicked" prefHeight="48.0" prefWidth="145.0" text="Przeprowadź kalkulację" />
+      <Label layoutX="903.0" layoutY="617.0" text="Label" />
+      <Button layoutX="108.0" layoutY="736.0" mnemonicParsing="false" text="Zapisz" />
+      <TableView fx:id="positiveRelationTable" layoutX="865.0" layoutY="66.0" prefHeight="118.0" prefWidth="219.0">
+        <columns>
+          <TableColumn fx:id="positiveRelation1Column" prefWidth="107.0" text="Imię i Nazwisko" />
+          <TableColumn fx:id="positiveRelation2Column" prefWidth="111.0" text="Imię i Nazwisko" />
+        </columns>
+      </TableView>
+      <Button fx:id="uploadPositiveRelationButton" layoutX="865.0" layoutY="201.0" mnemonicParsing="false" text="Prześlij" />
+      <Button fx:id="editPositiveRelationButton" layoutX="1035.0" layoutY="201.0" mnemonicParsing="false" onMouseClicked="#editRelationButtonClicked" text="Edytuj" />
+      <TableView fx:id="negativeRelationTable" layoutX="865.0" layoutY="260.0" prefHeight="118.0" prefWidth="219.0">
+         <columns>
+            <TableColumn fx:id="negativeRelation1Column1" prefWidth="107.0" text="Imię i Nazwisko" />
+            <TableColumn fx:id="negativeRelation2Column1" prefWidth="111.0" text="Imię i Nazwisko" />
+         </columns>
+      </TableView>
+      <Button fx:id="uploadNegativeRelationButton1" layoutX="865.0" layoutY="395.0" mnemonicParsing="false" text="Prześlij" />
+      <Button fx:id="editNegativeRelationButton1" layoutX="1035.0" layoutY="395.0" mnemonicParsing="false" onMouseClicked="#editRelationButtonClicked" text="Edytuj" />
+   </children>
+</AnchorPane>
