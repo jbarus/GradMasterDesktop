@@ -4,6 +4,9 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.github.jbarus.gradmasterdesktop.models.ContextDisplayInfoDTO;
+import com.github.jbarus.gradmasterdesktop.models.SolutionDTO;
+import com.github.jbarus.gradmasterdesktop.models.Student;
+import com.github.jbarus.gradmasterdesktop.models.UniversityEmployee;
 
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
@@ -54,21 +57,70 @@ public class HTTPRequests {
         return false;
     }
 
-    public static boolean getUniversityEmployeeById(UUID id) {
+    public static List<UniversityEmployee> getUniversityEmployeesById(UUID id) {
 
         try{
-            URL obj = new URL(BASE_URL+"context-display-infos/"+id);
+            URL obj = new URL(BASE_URL+"university-employees/"+id);
             HttpURLConnection connection = (HttpURLConnection) obj.openConnection();
-            connection.setRequestMethod("DELETE");
+            connection.setRequestMethod("GET");
             int responseCode = connection.getResponseCode();
+            if(responseCode == HttpURLConnection.HTTP_OK){
+                BufferedReader in = new BufferedReader(new InputStreamReader(connection.getInputStream()));
+                ObjectMapper mapper = new ObjectMapper();
+                mapper.registerModule(new JavaTimeModule());
 
-            if (responseCode == HttpURLConnection.HTTP_OK) {
-                return true;
+                List<UniversityEmployee> employeeList = mapper.readValue(in, new TypeReference<List<UniversityEmployee>>(){});
+                in.close();
+                return employeeList;
             }
 
         }catch (Exception e){
             e.printStackTrace();
         }
-        return false;
+        return new ArrayList<>();
+    }
+
+    public static List<Student> getStudentsById(UUID id) {
+        try{
+            URL obj = new URL(BASE_URL+"students/"+id);
+            HttpURLConnection connection = (HttpURLConnection) obj.openConnection();
+            connection.setRequestMethod("GET");
+            int responseCode = connection.getResponseCode();
+            if(responseCode == HttpURLConnection.HTTP_OK){
+                BufferedReader in = new BufferedReader(new InputStreamReader(connection.getInputStream()));
+                ObjectMapper mapper = new ObjectMapper();
+                mapper.registerModule(new JavaTimeModule());
+
+                List<Student> studentList = mapper.readValue(in, new TypeReference<List<Student>>(){});
+                in.close();
+                return studentList;
+            }
+
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+        return new ArrayList<>();
+    }
+
+    public static SolutionDTO getSolutionById(UUID id) {
+        try{
+            URL obj = new URL(BASE_URL+"solutions/"+id);
+            HttpURLConnection connection = (HttpURLConnection) obj.openConnection();
+            connection.setRequestMethod("GET");
+            int responseCode = connection.getResponseCode();
+            if(responseCode == HttpURLConnection.HTTP_OK){
+                BufferedReader in = new BufferedReader(new InputStreamReader(connection.getInputStream()));
+                ObjectMapper mapper = new ObjectMapper();
+                mapper.registerModule(new JavaTimeModule());
+
+                SolutionDTO solutionDTO = mapper.readValue(in,SolutionDTO.class);
+                in.close();
+                return solutionDTO;
+            }
+
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+        return new SolutionDTO();
     }
 }

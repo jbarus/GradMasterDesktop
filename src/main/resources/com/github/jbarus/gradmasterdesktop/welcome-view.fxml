@@ -10,7 +10,7 @@
   <children>
     <AnchorPane maxHeight="-1.0" maxWidth="-1.0" prefHeight="-1.0" prefWidth="-1.0" VBox.vgrow="ALWAYS">
          <children>
-            <TableView id="problemTable" fx:id="problemTable" layoutX="117.0" layoutY="100.0" prefHeight="200.0" prefWidth="407.0">
+            <TableView id="problemTable" fx:id="problemTable" layoutX="117.0" layoutY="100.0" onMouseClicked="#itemSelected" prefHeight="200.0" prefWidth="407.0">
                <columns>
                   <TableColumn fx:id="nameColumn" prefWidth="75.0" text="Nazwa" />
                   <TableColumn fx:id="dateColumn" prefWidth="75.0" text="Data" />

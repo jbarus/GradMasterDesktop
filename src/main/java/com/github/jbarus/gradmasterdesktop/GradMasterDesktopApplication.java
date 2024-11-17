@@ -16,7 +16,6 @@ public class GradMasterDesktopApplication extends Application {
         stage.setTitle("GradMaster");
         stage.setScene(scene);
         stage.show();
-        System.out.println(HTTPRequests.getAllContextDisplayInfo());
     }
 
     public static void main(String[] args) {

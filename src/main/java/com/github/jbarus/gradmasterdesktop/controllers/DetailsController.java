@@ -1,11 +1,23 @@
 package com.github.jbarus.gradmasterdesktop.controllers;
 
+import com.github.jbarus.gradmasterdesktop.communication.HTTPRequests;
+import com.github.jbarus.gradmasterdesktop.context.Context;
+import com.github.jbarus.gradmasterdesktop.models.Committee;
+import com.github.jbarus.gradmasterdesktop.models.SolutionDTO;
+import com.github.jbarus.gradmasterdesktop.models.Student;
+import com.github.jbarus.gradmasterdesktop.models.UniversityEmployee;
+import javafx.beans.property.SimpleStringProperty;
+import javafx.collections.FXCollections;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
+import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.input.MouseEvent;
+
+import java.time.LocalTime;
+
 
 public class DetailsController {
 
@@ -18,8 +30,7 @@ public class DetailsController {
     @FXML
     private Button committeeDetailsButton;
 
-    @FXML
-    private TableColumn<?, ?> committeeNameColumn;
+
 
     @FXML
     private Label dateLabel;
@@ -40,7 +51,7 @@ public class DetailsController {
     private Button editUniversityEmployeeButton;
 
     @FXML
-    private TableColumn<?, ?> isHabilitatedColumn;
+    private TableColumn<UniversityEmployee, Boolean> isHabilitatedColumn;
 
     @FXML
     private Label nameLabel;
@@ -67,40 +78,42 @@ public class DetailsController {
     private TableView<?> positiveRelationTable;
 
     @FXML
-    private TableColumn<?, ?> prefferedCommitteeDurationColumn;
+    private TableColumn<UniversityEmployee, Integer> prefferedCommitteeDurationColumn;
 
     @FXML
     private Button refreshCommitteeButton;
 
     @FXML
-    private TableView<?> solutionTable;
+    private TableView<Committee> solutionTable;
+    @FXML
+    private TableColumn<Committee, String> committeeNameColumn;
 
     @FXML
     private Button startCalculationButton;
 
     @FXML
-    private TableColumn<?, ?> studentFirstnameColumn;
+    private TableColumn<Student, String> studentFirstnameColumn;
 
     @FXML
-    private TableColumn<?, ?> studentSecondNameColumn;
+    private TableColumn<Student, String> studentSecondNameColumn;
 
     @FXML
-    private TableView<?> studentTable;
+    private TableView<Student> studentTable;
 
     @FXML
-    private TableColumn<?, ?> timeslotEndColumn;
+    private TableColumn<UniversityEmployee, LocalTime> timeslotEndColumn;
 
     @FXML
-    private TableColumn<?, ?> timeslotStartColumn;
+    private TableColumn<UniversityEmployee, LocalTime> timeslotStartColumn;
 
     @FXML
-    private TableColumn<?, ?> unassignedStudentFirstnameColumn;
+    private TableColumn<Student, String> unassignedStudentFirstnameColumn;
 
     @FXML
-    private TableColumn<?, ?> unassignedStudentSecondnameColumn;
+    private TableColumn<Student, String> unassignedStudentSecondnameColumn;
 
     @FXML
-    private TableView<?> unassignedStudentTable;
+    private TableView<Student> unassignedStudentTable;
 
     @FXML
     private TableColumn<?, ?> unassignedUniversityEmployeeFirstnameColumn;
@@ -112,13 +125,16 @@ public class DetailsController {
     private TableView<?> unassignedUniversityEmployeeTable;
 
     @FXML
-    private TableColumn<?, ?> universityEmployeeFirstnameColumn;
+    private TableColumn<UniversityEmployee, String> universityEmployeeFirstnameColumn;
 
     @FXML
-    private TableColumn<?, ?> universityEmployeeNameColumn;
+    private TableColumn<UniversityEmployee, String> universityEmployeeSecondnameColumn;
 
     @FXML
-    private TableView<?> universityEmployeeTable;
+    private TableView<UniversityEmployee> universityEmployeeTable;
+
+    @FXML
+    private Button uploadFilesButton;
 
     @FXML
     private Button uploadNegativeRelationButton1;
@@ -127,10 +143,50 @@ public class DetailsController {
     private Button uploadPositiveRelationButton;
 
     @FXML
-    private Button uploadStudentFileButton;
+    public void initialize(){
+        initializeUniversityEmployees();
+        initializeStudents();
+        initializeSolution();
 
-    @FXML
-    private Button uploadUniversityEmployeeFileButton;
+    }
+
+    private void initializeSolution() {
+        SolutionDTO solutionDTO = HTTPRequests.getSolutionById(Context.getInstance().getId());
+        committeeNameColumn.setCellValueFactory(cellData -> {
+            int index = Context.getInstance().getCommittees().indexOf(cellData.getValue()) + 1;
+            String name = "Komisja " + index;
+            return new SimpleStringProperty(name);
+        });
+
+        if(solutionDTO.getCommittees() != null){
+            Context.getInstance().getCommittees().addAll(solutionDTO.getCommittees());
+        }
+
+        solutionTable.setItems(Context.getInstance().getCommittees());
+
+        if(solutionDTO.getUnassignedStudents() != null){
+            Context.getInstance().getUnassignedStudents().addAll(solutionDTO.getUnassignedStudents());
+        }
+        unassignedStudentFirstnameColumn.setCellValueFactory(new PropertyValueFactory<>("firstName"));
+        unassignedStudentSecondnameColumn.setCellValueFactory(new PropertyValueFactory<>("secondName"));
+        unassignedStudentTable.setItems(Context.getInstance().getUnassignedStudents());
+    }
+
+    private void initializeStudents() {
+        studentFirstnameColumn.setCellValueFactory(new PropertyValueFactory<>("firstName"));
+        studentSecondNameColumn.setCellValueFactory(new PropertyValueFactory<>("secondName"));
+        studentTable.getItems().addAll(FXCollections.observableArrayList(HTTPRequests.getStudentsById(Context.getInstance().getId())));
+    }
+
+    private void initializeUniversityEmployees() {
+        universityEmployeeFirstnameColumn.setCellValueFactory(new PropertyValueFactory<>("firstName"));
+        universityEmployeeSecondnameColumn.setCellValueFactory(new PropertyValueFactory<>("secondName"));
+        isHabilitatedColumn.setCellValueFactory(new PropertyValueFactory<>("habilitated"));
+        timeslotStartColumn.setCellValueFactory(new PropertyValueFactory<>("timeslotStart"));
+        timeslotEndColumn.setCellValueFactory(new PropertyValueFactory<>("timeslotEnd"));
+        prefferedCommitteeDurationColumn.setCellValueFactory(new PropertyValueFactory<>("preferredCommitteeDuration"));
+        universityEmployeeTable.getItems().addAll(FXCollections.observableArrayList(HTTPRequests.getUniversityEmployeesById(Context.getInstance().getId())));
+    }
 
     @FXML
     void committeeDetailsButtonClicked(MouseEvent event) {
@@ -168,12 +224,7 @@ public class DetailsController {
     }
 
     @FXML
-    void uploadStudentFileButtonClicked(MouseEvent event) {
-
-    }
-
-    @FXML
-    void uploadUniversityEmployeeFileButtonClicked(MouseEvent event) {
+    void uploadFilesButtonClicked(MouseEvent event) {
 
     }
 
