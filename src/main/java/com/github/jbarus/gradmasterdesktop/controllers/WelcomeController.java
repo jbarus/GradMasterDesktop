@@ -48,12 +48,22 @@ public class WelcomeController {
         dateColumn.setCellValueFactory(new PropertyValueFactory<>("date"));
         nameColumn.prefWidthProperty().bind(problemTable.widthProperty().multiply(0.75));
         dateColumn.prefWidthProperty().bind(problemTable.widthProperty().multiply(0.25));
-        problemTable.getItems().addAll(FXCollections.observableArrayList(HTTPRequests.getAllContextDisplayInfo()));
+        Context.getInstance().setContextDisplayInfoDTOS(FXCollections.observableArrayList(HTTPRequests.getAllContextDisplayInfo()));
+        problemTable.setItems(Context.getInstance().getContextDisplayInfoDTOS());
     }
 
     @FXML
     void addButtonClicked(ActionEvent event) {
-
+        try {
+            FXMLLoader fxmlLoader = new FXMLLoader(GradMasterDesktopApplication.class.getResource("create-context-view.fxml"));
+            Scene scene = new Scene(fxmlLoader.load());
+            Stage stage = new Stage();
+            stage.setTitle("GradMaster");
+            stage.setScene(scene);
+            stage.show();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     @FXML

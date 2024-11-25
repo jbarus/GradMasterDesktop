@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.TableColumn?>
+<?import javafx.scene.control.TableView?>
+<?import javafx.scene.layout.AnchorPane?>
+
+
+<AnchorPane prefHeight="600.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.github.jbarus.gradmasterdesktop.controllers.RelationUploadController">
+   <children>
+      <TableView fx:id="positiveUniversityEmployeeTable" layoutX="37.0" layoutY="63.0" prefHeight="200.0" prefWidth="200.0">
+        <columns>
+          <TableColumn fx:id="positiveUniversityEmployeeFirstnameColumn" prefWidth="100.0" text="C1" />
+          <TableColumn fx:id="positiveUniversityEmployeeSecondnameColumn" prefWidth="99.0" text="C2" />
+        </columns>
+      </TableView>
+      <TableView fx:id="positiveRelationTable" layoutX="361.0" layoutY="63.0" prefHeight="200.0" prefWidth="200.0">
+        <columns>
+          <TableColumn fx:id="positiveRelationFirstnameColumn" prefWidth="99.0" text="C1" />
+          <TableColumn fx:id="positiveRelationSecondnameColumn" prefWidth="100.0" text="C2" />
+        </columns>
+      </TableView>
+      <TableView fx:id="negativeUniversityEmployeeTable" layoutX="38.0" layoutY="337.0" prefHeight="200.0" prefWidth="200.0">
+         <columns>
+            <TableColumn fx:id="negativeUniversityEmployeeFirstnameColumn" prefWidth="105.0" text="C1" />
+            <TableColumn fx:id="negativeUniversityEmployeeSecondnameColumn" prefWidth="94.0" text="C2" />
+         </columns>
+      </TableView>
+      <TableView fx:id="negativeRelationTable" layoutX="362.0" layoutY="337.0" prefHeight="200.0" prefWidth="200.0">
+         <columns>
+            <TableColumn fx:id="negativeRelationFirstnameColumn" prefWidth="98.0" text="C1" />
+            <TableColumn fx:id="negativeRelationSecondnameColumn" prefWidth="101.0" text="C2" />
+         </columns>
+      </TableView>
+      <Button fx:id="moveFromPositiveRelationButton" layoutX="288.0" layoutY="125.0" mnemonicParsing="false" onMouseClicked="#moveFromPositiveRelationButtonClicked" text="&lt;" />
+      <Button fx:id="moveToPositiveRelationButton" layoutX="288.0" layoutY="176.0" mnemonicParsing="false" onMouseClicked="#moveToPositiveRelationButtonClicked" text="&gt;" />
+      <Button fx:id="moveFromNegativeRelationButton" layoutX="288.0" layoutY="399.0" mnemonicParsing="false" onMouseClicked="#moveFromNegativeRelationButtonClicked" text="&lt;" />
+      <Button fx:id="moveToNegativeRelationButton" layoutX="288.0" layoutY="450.0" mnemonicParsing="false" onMouseClicked="#moveToNegativeRelationButtonClicked" text="&gt;" />
+      <Button fx:id="nextButton" layoutX="535.0" layoutY="561.0" mnemonicParsing="false" onMouseClicked="#nextButtonClicked" text="Zakończ" />
+   </children>
+</AnchorPane>

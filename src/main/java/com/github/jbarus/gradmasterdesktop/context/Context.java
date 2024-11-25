@@ -1,6 +1,7 @@
 package com.github.jbarus.gradmasterdesktop.context;
 
 import com.github.jbarus.gradmasterdesktop.models.Committee;
+import com.github.jbarus.gradmasterdesktop.models.ContextDisplayInfoDTO;
 import com.github.jbarus.gradmasterdesktop.models.Student;
 import com.github.jbarus.gradmasterdesktop.models.UniversityEmployee;
 import javafx.collections.FXCollections;
@@ -19,6 +20,7 @@ public class Context {
     private ObservableList<UniversityEmployee> unassignedUniversityEmployee = FXCollections.observableArrayList();
     private ObservableList<Committee> committees = FXCollections.observableArrayList();
     private ObservableList<Student> unassignedStudents = FXCollections.observableArrayList();
+    private ObservableList<ContextDisplayInfoDTO> contextDisplayInfoDTOS = FXCollections.observableArrayList();
     private Committee selectedCommittee = null;
 
     private Context() {

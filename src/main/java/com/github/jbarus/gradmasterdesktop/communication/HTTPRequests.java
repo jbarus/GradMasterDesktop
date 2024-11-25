@@ -8,10 +8,10 @@ import com.github.jbarus.gradmasterdesktop.models.SolutionDTO;
 import com.github.jbarus.gradmasterdesktop.models.Student;
 import com.github.jbarus.gradmasterdesktop.models.UniversityEmployee;
 
-import java.io.BufferedReader;
-import java.io.InputStreamReader;
+import java.io.*;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
@@ -64,6 +64,8 @@ public class HTTPRequests {
             HttpURLConnection connection = (HttpURLConnection) obj.openConnection();
             connection.setRequestMethod("GET");
             int responseCode = connection.getResponseCode();
+            System.out.println("UniversityEmployee: "+responseCode);
+            System.out.println("UUID: "+id);
             if(responseCode == HttpURLConnection.HTTP_OK){
                 BufferedReader in = new BufferedReader(new InputStreamReader(connection.getInputStream()));
                 ObjectMapper mapper = new ObjectMapper();
@@ -122,5 +124,199 @@ public class HTTPRequests {
             e.printStackTrace();
         }
         return new SolutionDTO();
+    }
+
+    public static boolean uploadUniversityEmployeeFile(File file, UUID id){
+        String boundary = "Boundary-" + System.currentTimeMillis();
+        String LINE_FEED = "\r\n";
+
+        try{
+            URL url = new URL(BASE_URL+"university-employees/"+id);
+            HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+            connection.setDoOutput(true);
+            connection.setRequestMethod("POST");
+            connection.setRequestProperty("Content-Type", "multipart/form-data; boundary=" + boundary);
+
+            try (OutputStream outputStream = connection.getOutputStream();
+                 PrintWriter writer = new PrintWriter(new OutputStreamWriter(outputStream, "UTF-8"), true)) {
+
+                writer.append("--").append(boundary).append(LINE_FEED);
+                writer.append("Content-Disposition: form-data; name=\"universityEmployees\"; filename=\"")
+                        .append(file.getName()).append("\"").append(LINE_FEED);
+                writer.append("Content-Type: ").append(Files.probeContentType(file.toPath())).append(LINE_FEED);
+                writer.append(LINE_FEED);
+                writer.flush();
+
+                Files.copy(file.toPath(), outputStream);
+                outputStream.flush();
+
+                writer.append(LINE_FEED).flush();
+                writer.append("--").append(boundary).append("--").append(LINE_FEED);
+                writer.flush();
+            }
+
+
+            int responseCode = connection.getResponseCode();
+            if (responseCode == HttpURLConnection.HTTP_OK) {
+                BufferedReader reader = new BufferedReader(new InputStreamReader(connection.getInputStream()));
+                StringBuilder response = new StringBuilder();
+                String line;
+                while ((line = reader.readLine()) != null) {
+                    response.append(line);
+                }
+                reader.close();
+                return true;
+            }
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+        return false;
+    }
+
+    public static UUID createProblemContext(ContextDisplayInfoDTO displayInfoDTO) {
+        try {
+            URL obj = new URL(BASE_URL + "context-display-infos");
+            HttpURLConnection connection = (HttpURLConnection) obj.openConnection();
+
+            connection.setRequestMethod("POST");
+            connection.setDoOutput(true);
+
+            connection.setRequestProperty("Content-Type", "application/json");
+            connection.setRequestProperty("Accept", "application/json");
+
+            ObjectMapper objectMapper = new ObjectMapper();
+            objectMapper.registerModule(new JavaTimeModule());
+
+            String jsonPayload = objectMapper.writeValueAsString(displayInfoDTO);
+
+            try (OutputStream os = connection.getOutputStream()) {
+                byte[] input = jsonPayload.getBytes("utf-8");
+                os.write(input, 0, input.length);
+            }
+
+            int responseCode = connection.getResponseCode();
+            System.out.println(responseCode);
+            if (responseCode == HttpURLConnection.HTTP_OK || responseCode == HttpURLConnection.HTTP_CREATED) {
+                BufferedReader reader = new BufferedReader(new InputStreamReader(connection.getInputStream(), "utf-8"));
+                StringBuilder response = new StringBuilder();
+                String line;
+                while ((line = reader.readLine()) != null) {
+                    response.append(line.trim());
+                }
+
+                ContextDisplayInfoDTO responseDTO = objectMapper.readValue(response.toString(), ContextDisplayInfoDTO.class);
+
+                return responseDTO.getId();
+            } else {
+                throw new RuntimeException("Błąd serwera: kod odpowiedzi " + responseCode);
+            }
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
+
+    public static boolean uploadStudent(File file, UUID id) {
+        String boundary = "Boundary-" + System.currentTimeMillis();
+        String LINE_FEED = "\r\n";
+
+        try{
+            URL url = new URL(BASE_URL+"students/"+ id);
+            HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+            connection.setDoOutput(true);
+            connection.setRequestMethod("POST");
+            connection.setRequestProperty("Content-Type", "multipart/form-data; boundary=" + boundary);
+
+            try (OutputStream outputStream = connection.getOutputStream();
+                 PrintWriter writer = new PrintWriter(new OutputStreamWriter(outputStream, "UTF-8"), true)) {
+
+                writer.append("--").append(boundary).append(LINE_FEED);
+                writer.append("Content-Disposition: form-data; name=\"students\"; filename=\"")
+                        .append(file.getName()).append("\"").append(LINE_FEED);
+                writer.append("Content-Type: ").append(Files.probeContentType(file.toPath())).append(LINE_FEED);
+                writer.append(LINE_FEED);
+                writer.flush();
+
+                Files.copy(file.toPath(), outputStream);
+                outputStream.flush();
+
+                writer.append(LINE_FEED).flush();
+                writer.append("--").append(boundary).append("--").append(LINE_FEED);
+                writer.flush();
+            }
+
+
+            int responseCode = connection.getResponseCode();
+            if (responseCode == HttpURLConnection.HTTP_OK) {
+                BufferedReader reader = new BufferedReader(new InputStreamReader(connection.getInputStream()));
+                StringBuilder response = new StringBuilder();
+                String line;
+                while ((line = reader.readLine()) != null) {
+                    response.append(line);
+                }
+                reader.close();
+                return true;
+            }
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+        return false;
+    }
+
+    public static boolean uploadPositiveRelation(UUID contextId, List<UUID> positiveRelation) {
+        try {
+            URL url = new URL(BASE_URL + "relations/positive/" + contextId);
+            System.out.println("Positive: " + positiveRelation);
+
+            HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+            connection.setRequestMethod("POST");
+            connection.setRequestProperty("Content-Type", "application/json");
+            connection.setDoOutput(true);
+
+            ObjectMapper mapper = new ObjectMapper();
+            String jsonPayload = mapper.writeValueAsString(positiveRelation);
+
+            try (OutputStream os = connection.getOutputStream()) {
+                byte[] input = jsonPayload.getBytes("utf-8");
+                os.write(input, 0, input.length);
+            }
+
+            int responseCode = connection.getResponseCode();
+            System.out.println(responseCode);
+            if (responseCode == HttpURLConnection.HTTP_OK) {
+                return true;
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return false;
+    }
+
+    public static boolean uploadNegativeRelation(UUID contextId, List<UUID> negativeRelation) {
+        try {
+            URL url = new URL(BASE_URL + "relations/negative/" + contextId);
+
+            HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+            connection.setRequestMethod("POST");
+            connection.setRequestProperty("Content-Type", "application/json");
+            connection.setDoOutput(true);
+
+            ObjectMapper mapper = new ObjectMapper();
+            String jsonPayload = mapper.writeValueAsString(negativeRelation);
+
+            try (OutputStream os = connection.getOutputStream()) {
+                byte[] input = jsonPayload.getBytes("utf-8");
+                os.write(input, 0, input.length);
+            }
+
+            int responseCode = connection.getResponseCode();
+            if (responseCode == HttpURLConnection.HTTP_OK) {
+                return true;
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return false;
     }
 }
