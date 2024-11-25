@@ -1,21 +1,23 @@
 package com.github.jbarus.gradmasterdesktop.controllers;
 
+import com.github.jbarus.gradmasterdesktop.GradMasterDesktopApplication;
 import com.github.jbarus.gradmasterdesktop.communication.HTTPRequests;
 import com.github.jbarus.gradmasterdesktop.context.Context;
-import com.github.jbarus.gradmasterdesktop.models.Committee;
-import com.github.jbarus.gradmasterdesktop.models.SolutionDTO;
-import com.github.jbarus.gradmasterdesktop.models.Student;
-import com.github.jbarus.gradmasterdesktop.models.UniversityEmployee;
+import com.github.jbarus.gradmasterdesktop.models.*;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
+import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.input.MouseEvent;
+import javafx.stage.Stage;
 
+import java.io.IOException;
 import java.time.LocalTime;
 
 
@@ -116,13 +118,13 @@ public class DetailsController {
     private TableView<Student> unassignedStudentTable;
 
     @FXML
-    private TableColumn<?, ?> unassignedUniversityEmployeeFirstnameColumn;
+    private TableColumn<UniversityEmployee, String> unassignedUniversityEmployeeFirstnameColumn;
 
     @FXML
-    private TableColumn<?, ?> unassignedUniversityEmployeeSecondnameColumn;
+    private TableColumn<UniversityEmployee, String> unassignedUniversityEmployeeSecondnameColumn;
 
     @FXML
-    private TableView<?> unassignedUniversityEmployeeTable;
+    private TableView<UniversityEmployee> unassignedUniversityEmployeeTable;
 
     @FXML
     private TableColumn<UniversityEmployee, String> universityEmployeeFirstnameColumn;
@@ -170,6 +172,10 @@ public class DetailsController {
         unassignedStudentFirstnameColumn.setCellValueFactory(new PropertyValueFactory<>("firstName"));
         unassignedStudentSecondnameColumn.setCellValueFactory(new PropertyValueFactory<>("secondName"));
         unassignedStudentTable.setItems(Context.getInstance().getUnassignedStudents());
+
+        unassignedUniversityEmployeeFirstnameColumn.setCellValueFactory(new PropertyValueFactory<>("firstName"));
+        unassignedUniversityEmployeeSecondnameColumn.setCellValueFactory(new PropertyValueFactory<>("secondName"));
+        unassignedUniversityEmployeeTable.setItems(Context.getInstance().getUnassignedUniversityEmployee());
     }
 
     private void initializeStudents() {
@@ -190,7 +196,21 @@ public class DetailsController {
 
     @FXML
     void committeeDetailsButtonClicked(MouseEvent event) {
+        Committee selectedItem = solutionTable.getSelectionModel().getSelectedItem();
 
+        if(selectedItem != null){
+            Context.getInstance().setSelectedCommittee(selectedItem);
+            try {
+                FXMLLoader fxmlLoader = new FXMLLoader(GradMasterDesktopApplication.class.getResource("edit-committee-view.fxml"));
+                Scene scene = new Scene(fxmlLoader.load());
+                Stage stage = new Stage();
+                stage.setTitle("GradMaster");
+                stage.setScene(scene);
+                stage.show();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
     }
 
     @FXML

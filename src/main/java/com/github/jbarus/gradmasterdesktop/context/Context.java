@@ -19,6 +19,7 @@ public class Context {
     private ObservableList<UniversityEmployee> unassignedUniversityEmployee = FXCollections.observableArrayList();
     private ObservableList<Committee> committees = FXCollections.observableArrayList();
     private ObservableList<Student> unassignedStudents = FXCollections.observableArrayList();
+    private Committee selectedCommittee = null;
 
     private Context() {
         this.id = UUID.randomUUID();
