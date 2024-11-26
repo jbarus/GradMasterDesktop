@@ -19,6 +19,7 @@ import javafx.stage.Stage;
 
 import java.io.IOException;
 import java.time.LocalTime;
+import java.util.List;
 
 
 public class DetailsController {
@@ -59,25 +60,25 @@ public class DetailsController {
     private Label nameLabel;
 
     @FXML
-    private TableColumn<?, ?> negativeRelation1Column1;
+    private TableColumn<UniversityEmployeeRelation, String> negativeRelation1Column;
 
     @FXML
-    private TableColumn<?, ?> negativeRelation2Column1;
+    private TableColumn<UniversityEmployeeRelation, String> negativeRelation2Column;
 
     @FXML
-    private TableView<?> negativeRelationTable;
+    private TableView<UniversityEmployeeRelation> negativeRelationTable;
 
     @FXML
     private Label numberOfPeoplePerCommitteeLabel;
 
     @FXML
-    private TableColumn<?, ?> positiveRelation1Column;
+    private TableColumn<UniversityEmployeeRelation, String> positiveRelation1Column;
 
     @FXML
-    private TableColumn<?, ?> positiveRelation2Column;
+    private TableColumn<UniversityEmployeeRelation, String> positiveRelation2Column;
 
     @FXML
-    private TableView<?> positiveRelationTable;
+    private TableView<UniversityEmployeeRelation> positiveRelationTable;
 
     @FXML
     private TableColumn<UniversityEmployee, Integer> prefferedCommitteeDurationColumn;
@@ -139,17 +140,49 @@ public class DetailsController {
     private Button uploadFilesButton;
 
     @FXML
-    private Button uploadNegativeRelationButton1;
-
-    @FXML
-    private Button uploadPositiveRelationButton;
-
-    @FXML
     public void initialize(){
         initializeUniversityEmployees();
         initializeStudents();
         initializeSolution();
+        initializeRelations();
+        dateLabel.setText("Data: " + Context.getInstance().getDate().toString());
+        nameLabel.setText("Name: " + Context.getInstance().getName());
 
+
+    }
+
+    private void initializeRelations() {
+        negativeRelation1Column.setCellValueFactory(cellData ->
+                new SimpleStringProperty(
+                        cellData.getValue().getUniversityEmployee1().getFirstName() + " " + cellData.getValue().getUniversityEmployee1().getSecondName()
+                )
+        );
+
+        negativeRelation2Column.setCellValueFactory(cellData -> {
+            UniversityEmployee employee2 = cellData.getValue().getUniversityEmployee2();
+            return new SimpleStringProperty(
+                    employee2 != null ? employee2.getFirstName() + " " + employee2.getSecondName() : "N/A"
+            );
+        });
+
+        Context.getInstance().getNegativeRelations().addAll(UniversityEmployeeRelation.convertListToRelation(HTTPRequests.getNegativeRelationsById(Context.getInstance().getId())));
+        negativeRelationTable.setItems(Context.getInstance().getNegativeRelations());
+
+        positiveRelation1Column.setCellValueFactory(cellData ->
+                new SimpleStringProperty(
+                        cellData.getValue().getUniversityEmployee1().getFirstName() + " " + cellData.getValue().getUniversityEmployee1().getSecondName()
+                )
+        );
+
+        positiveRelation2Column.setCellValueFactory(cellData -> {
+            UniversityEmployee employee2 = cellData.getValue().getUniversityEmployee2();
+            return new SimpleStringProperty(
+                    employee2 != null ? employee2.getFirstName() + " " + employee2.getSecondName() : "N/A"
+            );
+        });
+
+        Context.getInstance().getPositiveRelations().addAll(UniversityEmployeeRelation.convertListToRelation(HTTPRequests.getPositiveRelationsById(Context.getInstance().getId())));
+        positiveRelationTable.setItems(Context.getInstance().getPositiveRelations());
     }
 
     private void initializeSolution() {
@@ -181,7 +214,8 @@ public class DetailsController {
     private void initializeStudents() {
         studentFirstnameColumn.setCellValueFactory(new PropertyValueFactory<>("firstName"));
         studentSecondNameColumn.setCellValueFactory(new PropertyValueFactory<>("secondName"));
-        studentTable.getItems().addAll(FXCollections.observableArrayList(HTTPRequests.getStudentsById(Context.getInstance().getId())));
+        Context.getInstance().getStudents().addAll(HTTPRequests.getStudentsById(Context.getInstance().getId()));
+        studentTable.setItems(Context.getInstance().getStudents());
     }
 
     private void initializeUniversityEmployees() {
@@ -191,7 +225,8 @@ public class DetailsController {
         timeslotStartColumn.setCellValueFactory(new PropertyValueFactory<>("timeslotStart"));
         timeslotEndColumn.setCellValueFactory(new PropertyValueFactory<>("timeslotEnd"));
         prefferedCommitteeDurationColumn.setCellValueFactory(new PropertyValueFactory<>("preferredCommitteeDuration"));
-        universityEmployeeTable.getItems().addAll(FXCollections.observableArrayList(HTTPRequests.getUniversityEmployeesById(Context.getInstance().getId())));
+        Context.getInstance().getUniversityEmployees().addAll(HTTPRequests.getUniversityEmployeesById(Context.getInstance().getId()));
+        universityEmployeeTable.setItems(Context.getInstance().getUniversityEmployees());
     }
 
     @FXML
@@ -230,7 +265,22 @@ public class DetailsController {
 
     @FXML
     void editUniversityEmployeeButtonClicked(MouseEvent event) {
+        try {
+            FXMLLoader fxmlLoader = new FXMLLoader(GradMasterDesktopApplication.class.getResource("edit-university-employee-view.fxml"));
+            Scene scene = new Scene(fxmlLoader.load());
 
+            EditUniversityEmployeeController controller = fxmlLoader.getController();
+            UniversityEmployee universityEmployee = universityEmployeeTable.getSelectionModel().getSelectedItem();
+            controller.setSelectedUniversityEmployee(universityEmployee);
+            controller.loadData();
+
+            Stage stage = new Stage();
+            stage.setTitle("GradMaster");
+            stage.setScene(scene);
+            stage.show();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     @FXML
@@ -245,7 +295,20 @@ public class DetailsController {
 
     @FXML
     void uploadFilesButtonClicked(MouseEvent event) {
+        try {
+            FXMLLoader fxmlLoader = new FXMLLoader(GradMasterDesktopApplication.class.getResource("university-employee-file-upload-view.fxml"));
+            Scene scene = new Scene(fxmlLoader.load());
 
+            UniversityEmployeeFileUploadController controller = fxmlLoader.getController();
+            controller.setContextId(Context.getInstance().getId());
+
+            Stage stage = new Stage();
+            stage.setTitle("GradMaster");
+            stage.setScene(scene);
+            stage.show();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
 }

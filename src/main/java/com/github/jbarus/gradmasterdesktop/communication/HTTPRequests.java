@@ -319,4 +319,78 @@ public class HTTPRequests {
         }
         return false;
     }
+
+    public static List<UniversityEmployee> getPositiveRelationsById(UUID id) {
+
+        try{
+            URL obj = new URL(BASE_URL+"relations/positive/"+id);
+            HttpURLConnection connection = (HttpURLConnection) obj.openConnection();
+            connection.setRequestMethod("GET");
+            int responseCode = connection.getResponseCode();
+            if(responseCode == HttpURLConnection.HTTP_OK){
+                BufferedReader in = new BufferedReader(new InputStreamReader(connection.getInputStream()));
+                ObjectMapper mapper = new ObjectMapper();
+                mapper.registerModule(new JavaTimeModule());
+
+                List<UniversityEmployee> employeeList = mapper.readValue(in, new TypeReference<List<UniversityEmployee>>(){});
+                in.close();
+                return employeeList;
+            }
+
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+        return new ArrayList<>();
+    }
+
+    public static List<UniversityEmployee> getNegativeRelationsById(UUID id) {
+
+        try{
+            URL obj = new URL(BASE_URL+"relations/negative/"+id);
+            HttpURLConnection connection = (HttpURLConnection) obj.openConnection();
+            connection.setRequestMethod("GET");
+            int responseCode = connection.getResponseCode();
+            if(responseCode == HttpURLConnection.HTTP_OK){
+                BufferedReader in = new BufferedReader(new InputStreamReader(connection.getInputStream()));
+                ObjectMapper mapper = new ObjectMapper();
+                mapper.registerModule(new JavaTimeModule());
+
+                List<UniversityEmployee> employeeList = mapper.readValue(in, new TypeReference<List<UniversityEmployee>>(){});
+                in.close();
+                return employeeList;
+            }
+
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+        return new ArrayList<>();
+    }
+
+    public static boolean updateUniversityEmployeeById(UUID id, List<UniversityEmployee> universityEmployees) {
+        try {
+            URL url = new URL(BASE_URL + "university-employees/" + id);
+            HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+
+            connection.setRequestMethod("PUT");
+            connection.setRequestProperty("Content-Type", "application/json");
+            connection.setDoOutput(true);
+
+            ObjectMapper mapper = new ObjectMapper();
+            mapper.registerModule(new JavaTimeModule());
+            String jsonPayload = mapper.writeValueAsString(universityEmployees);
+
+            try (OutputStream os = connection.getOutputStream()) {
+                byte[] input = jsonPayload.getBytes("utf-8");
+                os.write(input, 0, input.length);
+            }
+
+            int responseCode = connection.getResponseCode();
+            if (responseCode == HttpURLConnection.HTTP_OK) {
+                return true;
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return false;
+    }
 }

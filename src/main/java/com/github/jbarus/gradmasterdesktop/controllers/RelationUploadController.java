@@ -1,7 +1,9 @@
 package com.github.jbarus.gradmasterdesktop.controllers;
 
 import com.github.jbarus.gradmasterdesktop.communication.HTTPRequests;
+import com.github.jbarus.gradmasterdesktop.context.Context;
 import com.github.jbarus.gradmasterdesktop.models.UniversityEmployee;
+import com.github.jbarus.gradmasterdesktop.models.UniversityEmployeeRelation;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
@@ -135,6 +137,7 @@ public class RelationUploadController {
             negativeResponse = HTTPRequests.uploadNegativeRelation(contextId, negativeRelations.stream().map(UniversityEmployee::getId).toList());
         }
         if(negativeResponse && positiveResponse){
+            updateContext();
             Stage currentStage = (Stage) nextButton.getScene().getWindow();
             currentStage.close();
         }
@@ -148,6 +151,17 @@ public class RelationUploadController {
             return false;
         }
         return true;
+    }
+
+    private void updateContext(){
+        if(Context.getInstance().getId() != null){
+            Context.getInstance().clearProblemData();
+            Context.getInstance().setId(contextId);
+            Context.getInstance().getUniversityEmployees().addAll(HTTPRequests.getUniversityEmployeesById(contextId));
+            Context.getInstance().getStudents().addAll(HTTPRequests.getStudentsById(contextId));
+            Context.getInstance().getPositiveRelations().addAll(UniversityEmployeeRelation.convertListToRelation(positiveRelationTable.getItems()));
+            Context.getInstance().getNegativeRelations().addAll(UniversityEmployeeRelation.convertListToRelation(negativeRelationTable.getItems()));
+        }
     }
 
 }

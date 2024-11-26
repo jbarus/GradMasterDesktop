@@ -71,6 +71,8 @@ public class WelcomeController {
         ContextDisplayInfoDTO selectedItem = problemTable.getSelectionModel().getSelectedItem();
         if (selectedItem != null) {
             Context.getInstance().setId(selectedItem.getId());
+            Context.getInstance().setName(selectedItem.getName());
+            Context.getInstance().setDate(selectedItem.getDate());
             try {
                 FXMLLoader fxmlLoader = new FXMLLoader(GradMasterDesktopApplication.class.getResource("details-view.fxml"));
                 Scene scene = new Scene(fxmlLoader.load());

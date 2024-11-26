@@ -41,6 +41,7 @@ public class CreateContextController {
                     .build();
             UUID id = HTTPRequests.createProblemContext(context);
             if(id != null) {
+                context.setId(id);
                 Context.getInstance().getContextDisplayInfoDTOS().add(context);
                 try {
                     FXMLLoader fxmlLoader = new FXMLLoader(GradMasterDesktopApplication.class.getResource("university-employee-file-upload-view.fxml"));
