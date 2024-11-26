@@ -393,4 +393,8 @@ public class HTTPRequests {
         }
         return false;
     }
+
+    public static void updateNegativeRelations(List<UniversityEmployee> universityEmployees) {
+
+    }
 }

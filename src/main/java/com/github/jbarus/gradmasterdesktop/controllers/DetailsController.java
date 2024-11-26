@@ -42,7 +42,7 @@ public class DetailsController {
     private Button deleteCommitteButton;
 
     @FXML
-    private Button editNegativeRelationButton1;
+    private Button editNegativeRelationButton;
 
     @FXML
     private Button editPositiveRelationButton;
@@ -254,11 +254,6 @@ public class DetailsController {
     }
 
     @FXML
-    void editRelationButtonClicked(MouseEvent event) {
-
-    }
-
-    @FXML
     void editStudentButtonClicked(MouseEvent event) {
 
     }
@@ -285,7 +280,16 @@ public class DetailsController {
 
     @FXML
     void refreshCommitteeButtonClicked(MouseEvent event) {
+        Context.getInstance().clearSolution();
+        SolutionDTO solutionDTO = HTTPRequests.getSolutionById(Context.getInstance().getId());
 
+        if(solutionDTO.getCommittees() != null){
+            Context.getInstance().getCommittees().addAll(solutionDTO.getCommittees());
+        }
+
+        if(solutionDTO.getUnassignedStudents() != null){
+            Context.getInstance().getUnassignedStudents().addAll(solutionDTO.getUnassignedStudents());
+        }
     }
 
     @FXML
@@ -311,4 +315,43 @@ public class DetailsController {
         }
     }
 
+    public void editPositiveRelationButtonClicked(MouseEvent mouseEvent) {
+        try {
+            FXMLLoader fxmlLoader = new FXMLLoader(GradMasterDesktopApplication.class.getResource("edit-relations-view.fxml"));
+            Scene scene = new Scene(fxmlLoader.load());
+
+            EditRelationsController controller = fxmlLoader.getController();
+            controller.setSelectedRelations(positiveRelationTable.getItems());
+            controller.setNegativeRelationList(false);
+            controller.loadData();
+
+            Stage stage = new Stage();
+            stage.setTitle("GradMaster");
+            stage.setScene(scene);
+            stage.show();
+        } catch (IOException e) {
+            e.printStackTrace();
+
+        }
+    }
+
+    public void editNegativeRelationButtonClicked(MouseEvent mouseEvent) {
+        try {
+            FXMLLoader fxmlLoader = new FXMLLoader(GradMasterDesktopApplication.class.getResource("edit-relations-view.fxml"));
+            Scene scene = new Scene(fxmlLoader.load());
+
+            EditRelationsController controller = fxmlLoader.getController();
+            controller.setSelectedRelations(negativeRelationTable.getItems());
+            controller.setNegativeRelationList(true);
+            controller.loadData();
+
+            Stage stage = new Stage();
+            stage.setTitle("GradMaster");
+            stage.setScene(scene);
+            stage.show();
+        } catch (IOException e) {
+            e.printStackTrace();
+
+        }
+    }
 }

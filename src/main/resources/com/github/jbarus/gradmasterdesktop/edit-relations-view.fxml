@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.TableColumn?>
+<?import javafx.scene.control.TableView?>
+<?import javafx.scene.layout.AnchorPane?>
+
+
+<AnchorPane prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.github.jbarus.gradmasterdesktop.controllers.EditRelationsController">
+   <children>
+      <TableView fx:id="universityEmployeeTable" layoutX="52.0" layoutY="100.0" prefHeight="200.0" prefWidth="200.0">
+        <columns>
+          <TableColumn fx:id="universityEmployeeFirstnameColumn" prefWidth="103.0" text="Imię" />
+          <TableColumn fx:id="universityEmployeeSecondnameColumn" prefWidth="96.0" text="Nazwisko" />
+        </columns>
+      </TableView>
+      <TableView fx:id="relationTable" layoutX="349.0" layoutY="100.0" prefHeight="200.0" prefWidth="200.0">
+        <columns>
+          <TableColumn fx:id="relationFirstnameColumn" prefWidth="103.0" text="Imię" />
+          <TableColumn fx:id="relationSecondnameColumn" prefWidth="96.0" text="Nazwisko" />
+        </columns>
+      </TableView>
+      <Button fx:id="moveFromRelationListButton" layoutX="288.0" layoutY="155.0" mnemonicParsing="false" onMouseClicked="#moveFromRelationListButtonClicked" text="&lt;" />
+      <Button fx:id="moveToRealtionListButton" layoutX="288.0" layoutY="220.0" mnemonicParsing="false" onMouseClicked="#moveToRealtionListButtonClicked" text="&gt;" />
+      <Button fx:id="saveButton" layoutX="534.0" layoutY="361.0" mnemonicParsing="false" onMouseClicked="#saveButtonClicked" text="Zapisz" />
+   </children>
+</AnchorPane>

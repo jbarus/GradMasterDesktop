@@ -61,13 +61,13 @@
           <TableColumn fx:id="positiveRelation2Column" prefWidth="111.0" text="Imię i Nazwisko" />
         </columns>
       </TableView>
-      <Button fx:id="editPositiveRelationButton" layoutX="1035.0" layoutY="201.0" mnemonicParsing="false" onMouseClicked="#editRelationButtonClicked" text="Edytuj" />
+      <Button fx:id="editPositiveRelationButton" layoutX="1035.0" layoutY="201.0" mnemonicParsing="false" onMouseClicked="#editPositiveRelationButtonClicked" text="Edytuj" />
       <TableView fx:id="negativeRelationTable" layoutX="865.0" layoutY="260.0" prefHeight="118.0" prefWidth="219.0">
          <columns>
             <TableColumn fx:id="negativeRelation1Column" prefWidth="107.0" text="Imię i Nazwisko" />
             <TableColumn fx:id="negativeRelation2Column" prefWidth="111.0" text="Imię i Nazwisko" />
          </columns>
       </TableView>
-      <Button fx:id="editNegativeRelationButton1" layoutX="1035.0" layoutY="395.0" mnemonicParsing="false" onMouseClicked="#editRelationButtonClicked" text="Edytuj" />
+      <Button fx:id="editNegativeRelationButton" layoutX="1035.0" layoutY="395.0" mnemonicParsing="false" onMouseClicked="#editNegativeRelationButtonClicked" text="Edytuj" />
    </children>
 </AnchorPane>

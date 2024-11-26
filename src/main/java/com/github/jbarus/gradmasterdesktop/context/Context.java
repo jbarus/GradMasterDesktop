@@ -45,4 +45,11 @@ public class Context {
         negativeRelations.clear();
     }
 
+    public void clearSolution(){
+        unassignedUniversityEmployee.clear();
+        committees.clear();
+        unassignedStudents.clear();
+        selectedCommittee = null;
+    }
+
 }

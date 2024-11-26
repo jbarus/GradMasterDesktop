@@ -25,4 +25,13 @@ public class UniversityEmployeeRelation {
         return relations;
     }
 
+    public static List<UniversityEmployee> convertRelationToList(List<UniversityEmployeeRelation> relations){
+        List<UniversityEmployee> employees = new ArrayList<>();
+        for (UniversityEmployeeRelation relation : relations) {
+            employees.add(relation.getUniversityEmployee1());
+            employees.add(relation.getUniversityEmployee2());
+        }
+        return employees;
+    }
+
 }
