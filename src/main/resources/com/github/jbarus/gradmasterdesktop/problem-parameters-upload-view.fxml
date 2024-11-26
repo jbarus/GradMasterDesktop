@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.AnchorPane?>
+
+
+<AnchorPane prefHeight="220.0" prefWidth="300.0" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.github.jbarus.gradmasterdesktop.controllers.ProblemParametersUploadController">
+   <children>
+      <Button fx:id="startCalculationButton" layoutX="166.0" layoutY="181.0" mnemonicParsing="false" onMouseClicked="#startCalculationButtonClicked" text="Uruchom kalkulacje" />
+      <Label layoutX="35.0" layoutY="26.0" text="Podaj wielkość komisji:" />
+      <TextField fx:id="committeeSizeTextField" layoutX="35.0" layoutY="53.0" />
+      <Label layoutX="35.0" layoutY="89.0" text="Podaj maksymalny czas obliczeń w sekundach:" />
+      <TextField fx:id="calculationTimeTextField" layoutX="35.0" layoutY="116.0" />
+   </children>
+</AnchorPane>

@@ -26,8 +26,8 @@
           <TableColumn fx:id="studentSecondNameColumn" prefWidth="111.0" text="Nazwisko" />
         </columns>
       </TableView>
-      <Label fx:id="nameLabel" layoutX="42.0" layoutY="29.0" text="Nazwa:" />
-      <Label fx:id="dateLabel" layoutX="42.0" layoutY="57.0" text="Data:" />
+      <Label fx:id="nameLabel" layoutX="42.0" layoutY="14.0" text="Nazwa:" />
+      <Label fx:id="dateLabel" layoutX="42.0" layoutY="42.0" text="Data:" />
       <Button fx:id="editStudentButton" layoutX="770.0" layoutY="352.0" mnemonicParsing="false" onMouseClicked="#editStudentButtonClicked" text="Edytuj" />
       <TableView fx:id="solutionTable" layoutX="108.0" layoutY="477.0" prefHeight="200.0" prefWidth="200.0">
         <columns>
@@ -46,14 +46,13 @@
           <TableColumn fx:id="unassignedUniversityEmployeeSecondnameColumn" prefWidth="102.0" text="Nazwisko" />
         </columns>
       </TableView>
-      <Label fx:id="numberOfPeoplePerCommitteeLabel" layoutX="903.0" layoutY="552.0" text="Label" />
-      <Label fx:id="calculationTimeDetails" layoutX="903.0" layoutY="585.0" text="Label" />
-      <Label fx:id="calculationDetailsLabel" layoutX="903.0" layoutY="521.0" text="Label" />
+      <Label fx:id="numberOfPeoplePerCommitteeLabel" layoutX="899.0" layoutY="508.0" text="Liczba pracowników w komisji:" />
+      <Label fx:id="calculationTimeDetails" layoutX="899.0" layoutY="541.0" text="Czas obliczeń:" />
+      <Label fx:id="calculationDetailsLabel" layoutX="899.0" layoutY="477.0" text="Szczegóły obliczeń:" />
       <Button fx:id="committeeDetailsButton" layoutX="108.0" layoutY="699.0" mnemonicParsing="false" onMouseClicked="#committeeDetailsButtonClicked" text="Szczegóły" />
       <Button fx:id="deleteCommitteButton" layoutX="191.0" layoutY="699.0" mnemonicParsing="false" onMouseClicked="#deleteCommitteeButtonClicked" text="Usuń" />
       <Button fx:id="refreshCommitteeButton" layoutX="247.0" layoutY="699.0" mnemonicParsing="false" onMouseClicked="#refreshCommitteeButtonClicked" text="Odśwież" />
       <Button fx:id="startCalculationButton" layoutX="1004.0" layoutY="724.0" mnemonicParsing="false" onMouseClicked="#startCalculationButtonClicked" prefHeight="48.0" prefWidth="145.0" text="Przeprowadź kalkulację" />
-      <Label layoutX="903.0" layoutY="617.0" text="Label" />
       <Button layoutX="108.0" layoutY="736.0" mnemonicParsing="false" text="Zapisz" />
       <TableView fx:id="positiveRelationTable" layoutX="865.0" layoutY="66.0" prefHeight="118.0" prefWidth="219.0">
         <columns>
@@ -69,5 +68,12 @@
          </columns>
       </TableView>
       <Button fx:id="editNegativeRelationButton" layoutX="1035.0" layoutY="395.0" mnemonicParsing="false" onMouseClicked="#editNegativeRelationButtonClicked" text="Edytuj" />
+      <Label layoutX="108.0" layoutY="449.0" text="Komisje:" />
+      <Label layoutX="373.0" layoutY="449.0" text="Nieprzypisani studenci:" />
+      <Label layoutX="652.0" layoutY="449.0" text="Nieprzypisani pracownicy uczelni:" />
+      <Label layoutX="80.0" layoutY="75.0" text="Lista pracowników uczelni:" />
+      <Label layoutX="600.0" layoutY="75.0" text="Lista studentów:" />
+      <Label layoutX="865.0" layoutY="42.0" text="Pozytywne relacje:" />
+      <Label layoutX="865.0" layoutY="234.0" text="Negatywne relacje:" />
    </children>
 </AnchorPane>

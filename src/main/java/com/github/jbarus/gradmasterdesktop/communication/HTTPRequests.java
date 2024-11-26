@@ -3,10 +3,7 @@ package com.github.jbarus.gradmasterdesktop.communication;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
-import com.github.jbarus.gradmasterdesktop.models.ContextDisplayInfoDTO;
-import com.github.jbarus.gradmasterdesktop.models.SolutionDTO;
-import com.github.jbarus.gradmasterdesktop.models.Student;
-import com.github.jbarus.gradmasterdesktop.models.UniversityEmployee;
+import com.github.jbarus.gradmasterdesktop.models.*;
 
 import java.io.*;
 import java.net.HttpURLConnection;
@@ -394,7 +391,73 @@ public class HTTPRequests {
         return false;
     }
 
-    public static void updateNegativeRelations(List<UniversityEmployee> universityEmployees) {
+    public static boolean uploadProblemParameters(UUID contextId, ProblemParameters problemParameters) {
+        try {
+            URL url = new URL(BASE_URL + "problem-parameters/" + contextId);
 
+            HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+            connection.setRequestMethod("POST");
+            connection.setRequestProperty("Content-Type", "application/json");
+            connection.setDoOutput(true);
+
+            ObjectMapper mapper = new ObjectMapper();
+            String jsonPayload = mapper.writeValueAsString(problemParameters);
+
+            try (OutputStream os = connection.getOutputStream()) {
+                byte[] input = jsonPayload.getBytes("utf-8");
+                os.write(input, 0, input.length);
+            }
+
+            int responseCode = connection.getResponseCode();
+            System.out.println("Upload problem parameters: " + responseCode);
+            if (responseCode == HttpURLConnection.HTTP_OK) {
+                return true;
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return false;
+    }
+
+    public static boolean startCalculation(UUID contextId) {
+        try {
+            URL url = new URL(BASE_URL + "problems/" + contextId);
+
+            HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+            connection.setRequestMethod("POST");
+            connection.setRequestProperty("Content-Type", "application/json");
+            connection.setDoOutput(true);
+
+            int responseCode = connection.getResponseCode();
+            System.out.println("Start calculation: " + responseCode);
+            if (responseCode == HttpURLConnection.HTTP_OK) {
+                return true;
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return false;
+    }
+
+    public static ProblemParameters getProblemParametersById(UUID id) {
+        try{
+            URL obj = new URL(BASE_URL+"problem-parameters/"+id);
+            HttpURLConnection connection = (HttpURLConnection) obj.openConnection();
+            connection.setRequestMethod("GET");
+            int responseCode = connection.getResponseCode();
+            if(responseCode == HttpURLConnection.HTTP_OK){
+                BufferedReader in = new BufferedReader(new InputStreamReader(connection.getInputStream()));
+                ObjectMapper mapper = new ObjectMapper();
+                mapper.registerModule(new JavaTimeModule());
+
+                ProblemParameters problemParameters = mapper.readValue(in,ProblemParameters.class);
+                in.close();
+                return problemParameters;
+            }
+
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+        return null;
     }
 }

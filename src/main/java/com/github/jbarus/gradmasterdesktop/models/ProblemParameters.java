@@ -1,10 +1,12 @@
 package com.github.jbarus.gradmasterdesktop.models;
 
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 @Getter
 @Setter
+@NoArgsConstructor
 public class ProblemParameters {
     private int committeeSize;
     private int maxNumberOfNonHabilitatedEmployees;
@@ -15,4 +17,5 @@ public class ProblemParameters {
         this.maxNumberOfNonHabilitatedEmployees = maxNumberOfNonHabilitatedEmployees;
         this.calculationTimeInSeconds = calculationTimeInSeconds;
     }
+
 }

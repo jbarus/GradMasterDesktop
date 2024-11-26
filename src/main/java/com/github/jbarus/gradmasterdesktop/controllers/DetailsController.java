@@ -5,7 +5,6 @@ import com.github.jbarus.gradmasterdesktop.communication.HTTPRequests;
 import com.github.jbarus.gradmasterdesktop.context.Context;
 import com.github.jbarus.gradmasterdesktop.models.*;
 import javafx.beans.property.SimpleStringProperty;
-import javafx.collections.FXCollections;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
@@ -19,7 +18,6 @@ import javafx.stage.Stage;
 
 import java.io.IOException;
 import java.time.LocalTime;
-import java.util.List;
 
 
 public class DetailsController {
@@ -145,10 +143,19 @@ public class DetailsController {
         initializeStudents();
         initializeSolution();
         initializeRelations();
+        initializeProblemParameters();
         dateLabel.setText("Data: " + Context.getInstance().getDate().toString());
         nameLabel.setText("Name: " + Context.getInstance().getName());
 
 
+    }
+
+    private void initializeProblemParameters() {
+        ProblemParameters problemParameters = HTTPRequests.getProblemParametersById(Context.getInstance().getId());
+        if(problemParameters != null) {
+            numberOfPeoplePerCommitteeLabel.setText("Liczba pracowników w komisji: " + problemParameters.getCommitteeSize());
+            calculationTimeDetails.setText("Czas obliczeń: " + problemParameters.getCalculationTimeInSeconds());
+        }
     }
 
     private void initializeRelations() {
@@ -294,7 +301,17 @@ public class DetailsController {
 
     @FXML
     void startCalculationButtonClicked(MouseEvent event) {
+        try {
+            FXMLLoader fxmlLoader = new FXMLLoader(GradMasterDesktopApplication.class.getResource("problem-parameters-upload-view.fxml"));
+            Scene scene = new Scene(fxmlLoader.load());
 
+            Stage stage = new Stage();
+            stage.setTitle("GradMaster");
+            stage.setScene(scene);
+            stage.show();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     @FXML
