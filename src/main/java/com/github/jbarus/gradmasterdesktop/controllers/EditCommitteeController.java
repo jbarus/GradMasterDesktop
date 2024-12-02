@@ -1,6 +1,5 @@
 package com.github.jbarus.gradmasterdesktop.controllers;
 
-import com.github.jbarus.gradmasterdesktop.communication.HTTPRequests;
 import com.github.jbarus.gradmasterdesktop.context.Context;
 import com.github.jbarus.gradmasterdesktop.models.Student;
 import com.github.jbarus.gradmasterdesktop.models.UniversityEmployee;

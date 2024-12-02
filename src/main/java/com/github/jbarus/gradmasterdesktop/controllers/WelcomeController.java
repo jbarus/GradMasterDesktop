@@ -4,15 +4,13 @@ import com.github.jbarus.gradmasterdesktop.GradMasterDesktopApplication;
 import com.github.jbarus.gradmasterdesktop.communication.HTTPRequests;
 import com.github.jbarus.gradmasterdesktop.context.Context;
 import com.github.jbarus.gradmasterdesktop.models.ContextDisplayInfoDTO;
-import javafx.application.Application;
+import com.github.jbarus.gradmasterdesktop.models.communication.Response;
 import javafx.collections.FXCollections;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
-import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
-import javafx.scene.control.Label;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.cell.PropertyValueFactory;
@@ -21,7 +19,7 @@ import javafx.stage.Stage;
 
 import java.io.IOException;
 import java.time.LocalDate;
-import java.util.Date;
+import java.util.List;
 
 public class WelcomeController {
     @FXML
@@ -44,12 +42,17 @@ public class WelcomeController {
     @FXML
     public void initialize(){
         openButton.setDisable(true);
+        deleteButton.setDisable(true);
         nameColumn.setCellValueFactory(new PropertyValueFactory<>("name"));
         dateColumn.setCellValueFactory(new PropertyValueFactory<>("date"));
         nameColumn.prefWidthProperty().bind(problemTable.widthProperty().multiply(0.75));
         dateColumn.prefWidthProperty().bind(problemTable.widthProperty().multiply(0.25));
-        Context.getInstance().setContextDisplayInfoDTOS(FXCollections.observableArrayList(HTTPRequests.getAllContextDisplayInfo()));
-        problemTable.setItems(Context.getInstance().getContextDisplayInfoDTOS());
+        Response<List<ContextDisplayInfoDTO>> response =  HTTPRequests.getAllContextDisplayInfos();
+
+       if(response != null && response.getHTTPStatusCode() < 300 ){
+           Context.getInstance().getContextDisplayInfoDTOS().addAll(FXCollections.observableArrayList(response.getBody()));
+       }
+       problemTable.setItems(Context.getInstance().getContextDisplayInfoDTOS());
     }
 
     @FXML
@@ -80,6 +83,9 @@ public class WelcomeController {
                 stage.setTitle("GradMaster");
                 stage.setScene(scene);
                 stage.show();
+
+                Stage currentStage = (Stage) openButton.getScene().getWindow();
+                currentStage.close();
             } catch (IOException e) {
                 e.printStackTrace();
             }
@@ -91,13 +97,15 @@ public class WelcomeController {
     public void itemSelected(MouseEvent mouseEvent) {
         if(problemTable.getSelectionModel().getSelectedItem() != null) {
             openButton.setDisable(false);
+            deleteButton.setDisable(false);
         }
     }
 
     public void deleteButtonClicked(ActionEvent actionEvent) {
         ContextDisplayInfoDTO selectedItem = problemTable.getSelectionModel().getSelectedItem();
         if (selectedItem != null) {
-            if(HTTPRequests.deleteContext(selectedItem.getId())){
+            Response<Void> response = HTTPRequests.deleteContextDisplayInfoByContextId(selectedItem.getId());
+            if(response != null && response.getHTTPStatusCode() < 300) {
                 problemTable.getItems().remove(selectedItem);
             }
         }

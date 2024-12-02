@@ -4,6 +4,10 @@ import com.github.jbarus.gradmasterdesktop.GradMasterDesktopApplication;
 import com.github.jbarus.gradmasterdesktop.communication.HTTPRequests;
 import com.github.jbarus.gradmasterdesktop.context.Context;
 import com.github.jbarus.gradmasterdesktop.models.*;
+import com.github.jbarus.gradmasterdesktop.models.communication.Response;
+import com.github.jbarus.gradmasterdesktop.models.dto.ProblemParametersDTO;
+import com.github.jbarus.gradmasterdesktop.models.dto.RelationDTO;
+import com.github.jbarus.gradmasterdesktop.models.dto.StudentDTO;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -31,7 +35,8 @@ public class DetailsController {
     @FXML
     private Button committeeDetailsButton;
 
-
+    @FXML
+    private Button backButton;
 
     @FXML
     private Label dateLabel;
@@ -147,14 +152,14 @@ public class DetailsController {
         dateLabel.setText("Data: " + Context.getInstance().getDate().toString());
         nameLabel.setText("Name: " + Context.getInstance().getName());
 
-
     }
 
     private void initializeProblemParameters() {
-        ProblemParameters problemParameters = HTTPRequests.getProblemParametersById(Context.getInstance().getId());
-        if(problemParameters != null) {
-            numberOfPeoplePerCommitteeLabel.setText("Liczba pracowników w komisji: " + problemParameters.getCommitteeSize());
-            calculationTimeDetails.setText("Czas obliczeń: " + problemParameters.getCalculationTimeInSeconds());
+        Response<ProblemParametersDTO> problemParametersDTOResponse = HTTPRequests.getProblemParametersByContextId(Context.getInstance().getId());
+
+        if(problemParametersDTOResponse != null && problemParametersDTOResponse.getHTTPStatusCode() < 300){
+            numberOfPeoplePerCommitteeLabel.setText("Liczba pracowników w komisji: " + problemParametersDTOResponse.getBody().getCommitteeSize());
+            calculationTimeDetails.setText("Czas obliczeń: " + problemParametersDTOResponse.getBody().getCalculationTimeInSeconds());
         }
     }
 
@@ -172,9 +177,6 @@ public class DetailsController {
             );
         });
 
-        Context.getInstance().getNegativeRelations().addAll(UniversityEmployeeRelation.convertListToRelation(HTTPRequests.getNegativeRelationsById(Context.getInstance().getId())));
-        negativeRelationTable.setItems(Context.getInstance().getNegativeRelations());
-
         positiveRelation1Column.setCellValueFactory(cellData ->
                 new SimpleStringProperty(
                         cellData.getValue().getUniversityEmployee1().getFirstName() + " " + cellData.getValue().getUniversityEmployee1().getSecondName()
@@ -188,40 +190,64 @@ public class DetailsController {
             );
         });
 
-        Context.getInstance().getPositiveRelations().addAll(UniversityEmployeeRelation.convertListToRelation(HTTPRequests.getPositiveRelationsById(Context.getInstance().getId())));
+        Response<RelationDTO> negativeRelationResponse = HTTPRequests.getNegativeRelationsByContextId(Context.getInstance().getId());
+
+        if(negativeRelationResponse != null && negativeRelationResponse.getHTTPStatusCode() < 300 ){
+            Context.getInstance().getNegativeRelations().addAll(UniversityEmployeeRelation.convertListToRelation(negativeRelationResponse.getBody().getRelationList()));
+        }
+
+        negativeRelationTable.setItems(Context.getInstance().getNegativeRelations());
+
+        Response<RelationDTO> positiveRelationResponse = HTTPRequests.getPositiveRelationsByContextId(Context.getInstance().getId());
+
+        if(positiveRelationResponse != null && positiveRelationResponse.getHTTPStatusCode() < 300 ){
+            Context.getInstance().getPositiveRelations().addAll(UniversityEmployeeRelation.convertListToRelation(positiveRelationResponse.getBody().getRelationList()));
+        }
+
         positiveRelationTable.setItems(Context.getInstance().getPositiveRelations());
     }
 
     private void initializeSolution() {
-        SolutionDTO solutionDTO = HTTPRequests.getSolutionById(Context.getInstance().getId());
+
         committeeNameColumn.setCellValueFactory(cellData -> {
             int index = Context.getInstance().getCommittees().indexOf(cellData.getValue()) + 1;
             String name = "Komisja " + index;
             return new SimpleStringProperty(name);
         });
 
-        if(solutionDTO.getCommittees() != null){
-            Context.getInstance().getCommittees().addAll(solutionDTO.getCommittees());
-        }
-
-        solutionTable.setItems(Context.getInstance().getCommittees());
-
-        if(solutionDTO.getUnassignedStudents() != null){
-            Context.getInstance().getUnassignedStudents().addAll(solutionDTO.getUnassignedStudents());
-        }
         unassignedStudentFirstnameColumn.setCellValueFactory(new PropertyValueFactory<>("firstName"));
         unassignedStudentSecondnameColumn.setCellValueFactory(new PropertyValueFactory<>("secondName"));
-        unassignedStudentTable.setItems(Context.getInstance().getUnassignedStudents());
 
         unassignedUniversityEmployeeFirstnameColumn.setCellValueFactory(new PropertyValueFactory<>("firstName"));
         unassignedUniversityEmployeeSecondnameColumn.setCellValueFactory(new PropertyValueFactory<>("secondName"));
+
+        Response<SolutionDTO> response =  HTTPRequests.getSolutionByContextId(Context.getInstance().getId());
+
+        if(response != null && response.getHTTPStatusCode() < 300) {
+            if(response.getBody().getCommittees() != null) {
+                Context.getInstance().getCommittees().addAll(response.getBody().getCommittees());
+            }
+            if(response.getBody().getUnassignedStudents() != null) {
+                Context.getInstance().getUnassignedStudents().addAll(response.getBody().getUnassignedStudents());
+            }
+        }
+
+        solutionTable.setItems(Context.getInstance().getCommittees());
+        unassignedStudentTable.setItems(Context.getInstance().getUnassignedStudents());
         unassignedUniversityEmployeeTable.setItems(Context.getInstance().getUnassignedUniversityEmployee());
+
     }
 
     private void initializeStudents() {
         studentFirstnameColumn.setCellValueFactory(new PropertyValueFactory<>("firstName"));
         studentSecondNameColumn.setCellValueFactory(new PropertyValueFactory<>("secondName"));
-        Context.getInstance().getStudents().addAll(HTTPRequests.getStudentsById(Context.getInstance().getId()));
+
+        Response<StudentDTO> response =  HTTPRequests.getStudentsByContextId(Context.getInstance().getId());
+
+        if(response != null && response.getHTTPStatusCode() < 300 ){
+            Context.getInstance().getStudents().addAll(response.getBody().getStudents());
+        }
+
         studentTable.setItems(Context.getInstance().getStudents());
     }
 
@@ -232,7 +258,13 @@ public class DetailsController {
         timeslotStartColumn.setCellValueFactory(new PropertyValueFactory<>("timeslotStart"));
         timeslotEndColumn.setCellValueFactory(new PropertyValueFactory<>("timeslotEnd"));
         prefferedCommitteeDurationColumn.setCellValueFactory(new PropertyValueFactory<>("preferredCommitteeDuration"));
-        Context.getInstance().getUniversityEmployees().addAll(HTTPRequests.getUniversityEmployeesById(Context.getInstance().getId()));
+
+        Response<UniversityEmployeeDTO> response =  HTTPRequests.getUniversityEmployeeByContextId(Context.getInstance().getId());
+
+        if(response != null && response.getHTTPStatusCode() < 300 ){
+            Context.getInstance().getUniversityEmployees().addAll(response.getBody().getUniversityEmployees());
+        }
+
         universityEmployeeTable.setItems(Context.getInstance().getUniversityEmployees());
     }
 
@@ -288,14 +320,11 @@ public class DetailsController {
     @FXML
     void refreshCommitteeButtonClicked(MouseEvent event) {
         Context.getInstance().clearSolution();
-        SolutionDTO solutionDTO = HTTPRequests.getSolutionById(Context.getInstance().getId());
+        Response<SolutionDTO> response = HTTPRequests.getSolutionByContextId(Context.getInstance().getId());
 
-        if(solutionDTO.getCommittees() != null){
-            Context.getInstance().getCommittees().addAll(solutionDTO.getCommittees());
-        }
-
-        if(solutionDTO.getUnassignedStudents() != null){
-            Context.getInstance().getUnassignedStudents().addAll(solutionDTO.getUnassignedStudents());
+        if(response != null && response.getHTTPStatusCode() < 300 ){
+            Context.getInstance().getCommittees().addAll(response.getBody().getCommittees());
+            Context.getInstance().getUnassignedStudents().addAll(response.getBody().getUnassignedStudents());
         }
     }
 
@@ -370,5 +399,26 @@ public class DetailsController {
             e.printStackTrace();
 
         }
+    }
+
+    @FXML
+    void backButtonClicked(MouseEvent event) {
+        try {
+            Context.getInstance().clearAll();
+            FXMLLoader fxmlLoader = new FXMLLoader(GradMasterDesktopApplication.class.getResource("welcome-view.fxml"));
+            Scene scene = new Scene(fxmlLoader.load());
+
+            Stage stage = new Stage();
+            stage.setTitle("GradMaster");
+            stage.setScene(scene);
+            stage.show();
+
+            Stage currentStage = (Stage) backButton.getScene().getWindow();
+            currentStage.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+
+        }
+
     }
 }

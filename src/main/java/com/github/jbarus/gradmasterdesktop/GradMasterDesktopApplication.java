@@ -1,6 +1,5 @@
 package com.github.jbarus.gradmasterdesktop;
 
-import com.github.jbarus.gradmasterdesktop.communication.HTTPRequests;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;

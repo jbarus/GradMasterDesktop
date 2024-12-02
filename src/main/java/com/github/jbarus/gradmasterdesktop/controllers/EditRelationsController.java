@@ -91,8 +91,8 @@ public class EditRelationsController {
                 Context.getInstance().getPositiveRelations().addAll(UniversityEmployeeRelation.convertListToRelation(relationTable.getItems()));
             }
 
-            HTTPRequests.uploadNegativeRelation(Context.getInstance().getId(), UniversityEmployeeRelation.convertRelationToList(Context.getInstance().getNegativeRelations()).stream().map(UniversityEmployee::getId).toList());
-            HTTPRequests.uploadPositiveRelation(Context.getInstance().getId(), UniversityEmployeeRelation.convertRelationToList(Context.getInstance().getPositiveRelations()).stream().map(UniversityEmployee::getId).toList());
+            HTTPRequests.updateNegativeRelationByContextId(Context.getInstance().getId(), UniversityEmployeeRelation.convertRelationToList(Context.getInstance().getNegativeRelations()).stream().map(UniversityEmployee::getId).toList());
+            HTTPRequests.updatePositiveRelationByContextId(Context.getInstance().getId(), UniversityEmployeeRelation.convertRelationToList(Context.getInstance().getPositiveRelations()).stream().map(UniversityEmployee::getId).toList());
 
             Stage currentStage = (Stage) saveButton.getScene().getWindow();
             currentStage.close();

@@ -52,4 +52,13 @@ public class Context {
         selectedCommittee = null;
     }
 
+    public void clearAll(){
+        contextDisplayInfoDTOS.clear();
+        date = null;
+        name = null;
+
+        clearProblemData();
+        clearSolution();
+    }
+
 }

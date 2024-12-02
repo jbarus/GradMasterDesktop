@@ -9,10 +9,8 @@ import javafx.scene.control.CheckBox;
 import javafx.scene.control.TextField;
 import javafx.scene.input.MouseEvent;
 import javafx.stage.Stage;
-import lombok.ConfigurationKeys;
 import lombok.Setter;
 
-import java.time.LocalDate;
 import java.time.LocalTime;
 
 public class EditUniversityEmployeeController {
@@ -54,7 +52,7 @@ public class EditUniversityEmployeeController {
         int index = Context.getInstance().getUniversityEmployees().indexOf(selectedUniversityEmployee);
         Context.getInstance().getUniversityEmployees().set(index, universityEmployee);
 
-        HTTPRequests.updateUniversityEmployeeById(Context.getInstance().getId(), Context.getInstance().getUniversityEmployees());
+        HTTPRequests.updateUniversityEmployeeByContextId(Context.getInstance().getId(), Context.getInstance().getUniversityEmployees());
 
         Stage currentStage = (Stage) saveButton.getScene().getWindow();
         currentStage.close();

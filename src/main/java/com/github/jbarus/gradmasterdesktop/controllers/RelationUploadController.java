@@ -3,7 +3,11 @@ package com.github.jbarus.gradmasterdesktop.controllers;
 import com.github.jbarus.gradmasterdesktop.communication.HTTPRequests;
 import com.github.jbarus.gradmasterdesktop.context.Context;
 import com.github.jbarus.gradmasterdesktop.models.UniversityEmployee;
+import com.github.jbarus.gradmasterdesktop.models.UniversityEmployeeDTO;
 import com.github.jbarus.gradmasterdesktop.models.UniversityEmployeeRelation;
+import com.github.jbarus.gradmasterdesktop.models.communication.Response;
+import com.github.jbarus.gradmasterdesktop.models.dto.RelationDTO;
+import com.github.jbarus.gradmasterdesktop.models.dto.StudentDTO;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
@@ -17,7 +21,6 @@ import lombok.Setter;
 
 import java.util.List;
 import java.util.UUID;
-import java.util.stream.Collectors;
 
 public class RelationUploadController {
 
@@ -88,9 +91,12 @@ public class RelationUploadController {
     }
 
     public void loadData(){
-        ObservableList<UniversityEmployee> universityEmployees = FXCollections.observableList(HTTPRequests.getUniversityEmployeesById(contextId));
-        negativeUniversityEmployeeTable.setItems(universityEmployees);
-        positiveUniversityEmployeeTable.setItems(universityEmployees);
+        Response<UniversityEmployeeDTO> response = HTTPRequests.getUniversityEmployeeByContextId(contextId);
+        if(response != null && response.getHTTPStatusCode() < 300 ){
+            ObservableList<UniversityEmployee> universityEmployees = FXCollections.observableList(response.getBody().getUniversityEmployees());
+            negativeUniversityEmployeeTable.setItems(universityEmployees);
+            positiveUniversityEmployeeTable.setItems(universityEmployees);
+        }
     }
 
     @FXML
@@ -129,14 +135,13 @@ public class RelationUploadController {
     void nextButtonClicked(MouseEvent event) {
         List<UniversityEmployee> negativeRelations = negativeRelationTable.getItems();
         List<UniversityEmployee> positiveRelations = positiveRelationTable.getItems();
-        boolean negativeResponse = false;
-        boolean positiveResponse = false;
+        Response<RelationDTO> negativeResponse = null;
+        Response<RelationDTO> positiveResponse = null;
         if(checkValidity(negativeRelations,positiveRelations)){
-            System.out.println("Haloooo");
-            positiveResponse = HTTPRequests.uploadPositiveRelation(contextId, positiveRelations.stream().map(UniversityEmployee::getId).toList());
-            negativeResponse = HTTPRequests.uploadNegativeRelation(contextId, negativeRelations.stream().map(UniversityEmployee::getId).toList());
+            positiveResponse = HTTPRequests.addPositiveRelationByContextId(contextId, positiveRelations.stream().map(UniversityEmployee::getId).toList());
+            negativeResponse = HTTPRequests.addNegativeRelationByContextId(contextId, negativeRelations.stream().map(UniversityEmployee::getId).toList());
         }
-        if(negativeResponse && positiveResponse){
+        if(negativeResponse != null && negativeResponse.getHTTPStatusCode() < 300 && positiveResponse != null && positiveResponse.getHTTPStatusCode() < 300){
             updateContext();
             Stage currentStage = (Stage) nextButton.getScene().getWindow();
             currentStage.close();
@@ -157,8 +162,17 @@ public class RelationUploadController {
         if(Context.getInstance().getId() != null){
             Context.getInstance().clearProblemData();
             Context.getInstance().setId(contextId);
-            Context.getInstance().getUniversityEmployees().addAll(HTTPRequests.getUniversityEmployeesById(contextId));
-            Context.getInstance().getStudents().addAll(HTTPRequests.getStudentsById(contextId));
+
+            Response<UniversityEmployeeDTO> universityEmployeeResponse = HTTPRequests.getUniversityEmployeeByContextId(contextId);
+            if(universityEmployeeResponse != null && universityEmployeeResponse.getHTTPStatusCode() < 300){
+                Context.getInstance().getUniversityEmployees().addAll(universityEmployeeResponse.getBody().getUniversityEmployees());
+            }
+
+            Response<StudentDTO> studentResponse = HTTPRequests.getStudentsByContextId(contextId);
+            if(studentResponse != null && studentResponse.getHTTPStatusCode() < 300){
+                Context.getInstance().getStudents().addAll(studentResponse.getBody().getStudents());
+            }
+
             Context.getInstance().getPositiveRelations().addAll(UniversityEmployeeRelation.convertListToRelation(positiveRelationTable.getItems()));
             Context.getInstance().getNegativeRelations().addAll(UniversityEmployeeRelation.convertListToRelation(negativeRelationTable.getItems()));
         }

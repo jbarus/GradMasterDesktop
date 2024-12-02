@@ -4,460 +4,753 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.github.jbarus.gradmasterdesktop.models.*;
+import com.github.jbarus.gradmasterdesktop.models.communication.*;
+import com.github.jbarus.gradmasterdesktop.models.dto.ProblemDTO;
+import com.github.jbarus.gradmasterdesktop.models.dto.ProblemParametersDTO;
+import com.github.jbarus.gradmasterdesktop.models.dto.RelationDTO;
+import com.github.jbarus.gradmasterdesktop.models.dto.StudentDTO;
 
-import java.io.*;
-import java.net.HttpURLConnection;
-import java.net.URL;
-import java.nio.file.Files;
-import java.util.ArrayList;
+import java.io.File;
+import java.net.URI;
+import java.net.http.HttpClient;
+import java.net.http.HttpRequest;
+import java.net.http.HttpResponse;
 import java.util.List;
 import java.util.UUID;
 
 public class HTTPRequests {
     private static final String BASE_URL = "http://localhost:8080/api/";
-    public static List<ContextDisplayInfoDTO> getAllContextDisplayInfo(){
-        try {
-            URL obj = new URL(BASE_URL+"context-display-infos");
-            HttpURLConnection connection = (HttpURLConnection) obj.openConnection();
-            connection.setRequestMethod("GET");
-            int responseCode = connection.getResponseCode();
-            if(responseCode == HttpURLConnection.HTTP_OK){
-                BufferedReader in = new BufferedReader(new InputStreamReader(connection.getInputStream()));
-                ObjectMapper mapper = new ObjectMapper();
-                mapper.registerModule(new JavaTimeModule());
-
-                List<ContextDisplayInfoDTO> contextDisplayInfoDTOS = mapper.readValue(in, new TypeReference<List<ContextDisplayInfoDTO>>(){});
-                in.close();
-                return contextDisplayInfoDTOS;
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        return new ArrayList<>();
+    private static final HttpClient CLIENT = HttpClient.newHttpClient();
+    private static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
+    static{
+        OBJECT_MAPPER.registerModule(new JavaTimeModule());
     }
 
-    public static boolean deleteContext(UUID id) {
-
-        try{
-            URL obj = new URL(BASE_URL+"context-display-infos/"+id);
-            HttpURLConnection connection = (HttpURLConnection) obj.openConnection();
-            connection.setRequestMethod("DELETE");
-            int responseCode = connection.getResponseCode();
-
-            if (responseCode == HttpURLConnection.HTTP_OK) {
-                return true;
-            }
-
-        }catch (Exception e){
-            e.printStackTrace();
-        }
-        return false;
-    }
-
-    public static List<UniversityEmployee> getUniversityEmployeesById(UUID id) {
-
-        try{
-            URL obj = new URL(BASE_URL+"university-employees/"+id);
-            HttpURLConnection connection = (HttpURLConnection) obj.openConnection();
-            connection.setRequestMethod("GET");
-            int responseCode = connection.getResponseCode();
-            System.out.println("UniversityEmployee: "+responseCode);
-            System.out.println("UUID: "+id);
-            if(responseCode == HttpURLConnection.HTTP_OK){
-                BufferedReader in = new BufferedReader(new InputStreamReader(connection.getInputStream()));
-                ObjectMapper mapper = new ObjectMapper();
-                mapper.registerModule(new JavaTimeModule());
-
-                List<UniversityEmployee> employeeList = mapper.readValue(in, new TypeReference<List<UniversityEmployee>>(){});
-                in.close();
-                return employeeList;
-            }
-
-        }catch (Exception e){
-            e.printStackTrace();
-        }
-        return new ArrayList<>();
-    }
-
-    public static List<Student> getStudentsById(UUID id) {
-        try{
-            URL obj = new URL(BASE_URL+"students/"+id);
-            HttpURLConnection connection = (HttpURLConnection) obj.openConnection();
-            connection.setRequestMethod("GET");
-            int responseCode = connection.getResponseCode();
-            if(responseCode == HttpURLConnection.HTTP_OK){
-                BufferedReader in = new BufferedReader(new InputStreamReader(connection.getInputStream()));
-                ObjectMapper mapper = new ObjectMapper();
-                mapper.registerModule(new JavaTimeModule());
-
-                List<Student> studentList = mapper.readValue(in, new TypeReference<List<Student>>(){});
-                in.close();
-                return studentList;
-            }
-
-        }catch (Exception e){
-            e.printStackTrace();
-        }
-        return new ArrayList<>();
-    }
-
-    public static SolutionDTO getSolutionById(UUID id) {
-        try{
-            URL obj = new URL(BASE_URL+"solutions/"+id);
-            HttpURLConnection connection = (HttpURLConnection) obj.openConnection();
-            connection.setRequestMethod("GET");
-            int responseCode = connection.getResponseCode();
-            if(responseCode == HttpURLConnection.HTTP_OK){
-                BufferedReader in = new BufferedReader(new InputStreamReader(connection.getInputStream()));
-                ObjectMapper mapper = new ObjectMapper();
-                mapper.registerModule(new JavaTimeModule());
-
-                SolutionDTO solutionDTO = mapper.readValue(in,SolutionDTO.class);
-                in.close();
-                return solutionDTO;
-            }
-
-        }catch (Exception e){
-            e.printStackTrace();
-        }
-        return new SolutionDTO();
-    }
-
-    public static boolean uploadUniversityEmployeeFile(File file, UUID id){
+    //University Employee
+    public static FullResponse<UploadStatus, UniversityEmployeeDTO> uploadUniversityEmployeesFileByContextId(UUID contextId, File file) {
         String boundary = "Boundary-" + System.currentTimeMillis();
-        String LINE_FEED = "\r\n";
 
-        try{
-            URL url = new URL(BASE_URL+"university-employees/"+id);
-            HttpURLConnection connection = (HttpURLConnection) url.openConnection();
-            connection.setDoOutput(true);
-            connection.setRequestMethod("POST");
-            connection.setRequestProperty("Content-Type", "multipart/form-data; boundary=" + boundary);
+        StringBuilder multipartBody = new StringBuilder();
+        multipartBody.append("--").append(boundary).append("\r\n")
+                .append("Content-Disposition: form-data; name=\"universityEmployees\"; filename=\"" + file.getName() + "\"\r\n")
+                .append("Content-Type: application/octet-stream\r\n\r\n");
 
-            try (OutputStream outputStream = connection.getOutputStream();
-                 PrintWriter writer = new PrintWriter(new OutputStreamWriter(outputStream, "UTF-8"), true)) {
+        byte[] fileBytes;
 
-                writer.append("--").append(boundary).append(LINE_FEED);
-                writer.append("Content-Disposition: form-data; name=\"universityEmployees\"; filename=\"")
-                        .append(file.getName()).append("\"").append(LINE_FEED);
-                writer.append("Content-Type: ").append(Files.probeContentType(file.toPath())).append(LINE_FEED);
-                writer.append(LINE_FEED);
-                writer.flush();
-
-                Files.copy(file.toPath(), outputStream);
-                outputStream.flush();
-
-                writer.append(LINE_FEED).flush();
-                writer.append("--").append(boundary).append("--").append(LINE_FEED);
-                writer.flush();
-            }
-
-
-            int responseCode = connection.getResponseCode();
-            if (responseCode == HttpURLConnection.HTTP_OK) {
-                BufferedReader reader = new BufferedReader(new InputStreamReader(connection.getInputStream()));
-                StringBuilder response = new StringBuilder();
-                String line;
-                while ((line = reader.readLine()) != null) {
-                    response.append(line);
-                }
-                reader.close();
-                return true;
-            }
-        }catch (Exception e){
-            e.printStackTrace();
-        }
-        return false;
-    }
-
-    public static UUID createProblemContext(ContextDisplayInfoDTO displayInfoDTO) {
         try {
-            URL obj = new URL(BASE_URL + "context-display-infos");
-            HttpURLConnection connection = (HttpURLConnection) obj.openConnection();
-
-            connection.setRequestMethod("POST");
-            connection.setDoOutput(true);
-
-            connection.setRequestProperty("Content-Type", "application/json");
-            connection.setRequestProperty("Accept", "application/json");
-
-            ObjectMapper objectMapper = new ObjectMapper();
-            objectMapper.registerModule(new JavaTimeModule());
-
-            String jsonPayload = objectMapper.writeValueAsString(displayInfoDTO);
-
-            try (OutputStream os = connection.getOutputStream()) {
-                byte[] input = jsonPayload.getBytes("utf-8");
-                os.write(input, 0, input.length);
-            }
-
-            int responseCode = connection.getResponseCode();
-            System.out.println(responseCode);
-            if (responseCode == HttpURLConnection.HTTP_OK || responseCode == HttpURLConnection.HTTP_CREATED) {
-                BufferedReader reader = new BufferedReader(new InputStreamReader(connection.getInputStream(), "utf-8"));
-                StringBuilder response = new StringBuilder();
-                String line;
-                while ((line = reader.readLine()) != null) {
-                    response.append(line.trim());
-                }
-
-                ContextDisplayInfoDTO responseDTO = objectMapper.readValue(response.toString(), ContextDisplayInfoDTO.class);
-
-                return responseDTO.getId();
-            } else {
-                throw new RuntimeException("Błąd serwera: kod odpowiedzi " + responseCode);
-            }
-
+            fileBytes = java.nio.file.Files.readAllBytes(file.toPath());
         } catch (Exception e) {
-            e.printStackTrace();
             return null;
         }
+
+        multipartBody.append(new String(fileBytes)).append("\r\n")
+                .append("--").append(boundary).append("--\r\n");
+
+        HttpRequest request = HttpRequest.newBuilder()
+                .uri(URI.create(BASE_URL + "university-employees/" + contextId))
+                .header("Content-Type", "multipart/form-data; boundary=" + boundary)
+                .POST(HttpRequest.BodyPublishers.ofString(multipartBody.toString()))
+                .build();
+
+        HttpResponse<String> httpResponse;
+        try {
+            httpResponse = CLIENT.send(request, HttpResponse.BodyHandlers.ofString());
+        } catch (Exception e) {
+            return null;
+        }
+
+        ServerResponse<UploadStatus, UniversityEmployeeDTO> serverResponse;
+
+        try {
+            serverResponse = OBJECT_MAPPER.readValue(httpResponse.body(),
+                    OBJECT_MAPPER.getTypeFactory().constructParametricType(ServerResponse.class, UploadStatus.class, UniversityEmployeeDTO.class));
+        } catch (Exception e) {
+            return null;
+        }
+
+        if (httpResponse.statusCode() >= 300) {
+            return new FullResponse<>(httpResponse.statusCode(), serverResponse.getStatus(), null);
+        }
+
+        return new FullResponse<>(httpResponse.statusCode(), serverResponse.getStatus(), serverResponse.getResponseBody());
     }
 
-    public static boolean uploadStudent(File file, UUID id) {
+    public static Response<UniversityEmployeeDTO> getUniversityEmployeeByContextId(UUID contextId){
+        HttpRequest request = HttpRequest.newBuilder()
+                .uri(URI.create(BASE_URL + "university-employees/" + contextId))
+                .GET()
+                .build();
+
+        HttpResponse<String> response;
+        try{
+            response = CLIENT.send(request, HttpResponse.BodyHandlers.ofString());
+        }catch (Exception e){
+            return null;
+        }
+
+        UniversityEmployeeDTO universityEmployees;
+
+        if(response.statusCode() < 300){
+            try{
+                universityEmployees = OBJECT_MAPPER.readValue(response.body(), UniversityEmployeeDTO.class);
+                return new Response<>(response.statusCode(),universityEmployees);
+            }catch (Exception e){
+                return null;
+            }
+        }
+        return new Response<>(response.statusCode(),null);
+    }
+
+    public static Response<List<UniversityEmployee>> updateUniversityEmployeeByContextId(UUID contextId, List<UniversityEmployee> universityEmployees){
+
+        String jsonRequestBody;
+        try {
+            jsonRequestBody = OBJECT_MAPPER.writeValueAsString(universityEmployees);
+        } catch (Exception e) {
+            return null;
+        }
+
+        HttpRequest request = HttpRequest.newBuilder()
+                .uri(URI.create(BASE_URL + "university-employees/" + contextId))
+                .header("Content-Type", "application/json")
+                .PUT(HttpRequest.BodyPublishers.ofString(jsonRequestBody))
+                .build();
+
+        HttpResponse<String> response;
+        try{
+            response = CLIENT.send(request, HttpResponse.BodyHandlers.ofString());
+        }catch (Exception e){
+            return null;
+        }
+
+        if(response.statusCode() < 300){
+            try{
+                universityEmployees = OBJECT_MAPPER.readValue(response.body(), new TypeReference<List<UniversityEmployee>>(){});
+                return new Response<>(response.statusCode(),universityEmployees);
+            }catch (Exception e){
+                return null;
+            }
+        }
+        return new Response<>(response.statusCode(),null);
+    }
+
+    //Student
+    public static FullResponse<UploadStatus, StudentDTO> uploadStudentFileByContextId(UUID contextId, File file) {
         String boundary = "Boundary-" + System.currentTimeMillis();
-        String LINE_FEED = "\r\n";
 
-        try{
-            URL url = new URL(BASE_URL+"students/"+ id);
-            HttpURLConnection connection = (HttpURLConnection) url.openConnection();
-            connection.setDoOutput(true);
-            connection.setRequestMethod("POST");
-            connection.setRequestProperty("Content-Type", "multipart/form-data; boundary=" + boundary);
+        StringBuilder multipartBody = new StringBuilder();
+        multipartBody.append("--").append(boundary).append("\r\n")
+                .append("Content-Disposition: form-data; name=\"students\"; filename=\"" + file.getName() + "\"\r\n")
+                .append("Content-Type: application/octet-stream\r\n\r\n");
 
-            try (OutputStream outputStream = connection.getOutputStream();
-                 PrintWriter writer = new PrintWriter(new OutputStreamWriter(outputStream, "UTF-8"), true)) {
+        byte[] fileBytes;
 
-                writer.append("--").append(boundary).append(LINE_FEED);
-                writer.append("Content-Disposition: form-data; name=\"students\"; filename=\"")
-                        .append(file.getName()).append("\"").append(LINE_FEED);
-                writer.append("Content-Type: ").append(Files.probeContentType(file.toPath())).append(LINE_FEED);
-                writer.append(LINE_FEED);
-                writer.flush();
-
-                Files.copy(file.toPath(), outputStream);
-                outputStream.flush();
-
-                writer.append(LINE_FEED).flush();
-                writer.append("--").append(boundary).append("--").append(LINE_FEED);
-                writer.flush();
-            }
-
-
-            int responseCode = connection.getResponseCode();
-            if (responseCode == HttpURLConnection.HTTP_OK) {
-                BufferedReader reader = new BufferedReader(new InputStreamReader(connection.getInputStream()));
-                StringBuilder response = new StringBuilder();
-                String line;
-                while ((line = reader.readLine()) != null) {
-                    response.append(line);
-                }
-                reader.close();
-                return true;
-            }
-        }catch (Exception e){
-            e.printStackTrace();
-        }
-        return false;
-    }
-
-    public static boolean uploadPositiveRelation(UUID contextId, List<UUID> positiveRelation) {
         try {
-            URL url = new URL(BASE_URL + "relations/positive/" + contextId);
-            System.out.println("Positive: " + positiveRelation);
-
-            HttpURLConnection connection = (HttpURLConnection) url.openConnection();
-            connection.setRequestMethod("POST");
-            connection.setRequestProperty("Content-Type", "application/json");
-            connection.setDoOutput(true);
-
-            ObjectMapper mapper = new ObjectMapper();
-            String jsonPayload = mapper.writeValueAsString(positiveRelation);
-
-            try (OutputStream os = connection.getOutputStream()) {
-                byte[] input = jsonPayload.getBytes("utf-8");
-                os.write(input, 0, input.length);
-            }
-
-            int responseCode = connection.getResponseCode();
-            System.out.println(responseCode);
-            if (responseCode == HttpURLConnection.HTTP_OK) {
-                return true;
-            }
+            fileBytes = java.nio.file.Files.readAllBytes(file.toPath());
         } catch (Exception e) {
-            e.printStackTrace();
+            return null;
         }
-        return false;
-    }
 
-    public static boolean uploadNegativeRelation(UUID contextId, List<UUID> negativeRelation) {
+        multipartBody.append(new String(fileBytes)).append("\r\n")
+                .append("--").append(boundary).append("--\r\n");
+
+        HttpRequest request = HttpRequest.newBuilder()
+                .uri(URI.create(BASE_URL + "students/" + contextId))
+                .header("Content-Type", "multipart/form-data; boundary=" + boundary)
+                .POST(HttpRequest.BodyPublishers.ofString(multipartBody.toString()))
+                .build();
+
+        HttpResponse<String> httpResponse;
         try {
-            URL url = new URL(BASE_URL + "relations/negative/" + contextId);
-
-            HttpURLConnection connection = (HttpURLConnection) url.openConnection();
-            connection.setRequestMethod("POST");
-            connection.setRequestProperty("Content-Type", "application/json");
-            connection.setDoOutput(true);
-
-            ObjectMapper mapper = new ObjectMapper();
-            String jsonPayload = mapper.writeValueAsString(negativeRelation);
-
-            try (OutputStream os = connection.getOutputStream()) {
-                byte[] input = jsonPayload.getBytes("utf-8");
-                os.write(input, 0, input.length);
-            }
-
-            int responseCode = connection.getResponseCode();
-            if (responseCode == HttpURLConnection.HTTP_OK) {
-                return true;
-            }
+            httpResponse = CLIENT.send(request, HttpResponse.BodyHandlers.ofString());
         } catch (Exception e) {
-            e.printStackTrace();
+            return null;
         }
-        return false;
-    }
 
-    public static List<UniversityEmployee> getPositiveRelationsById(UUID id) {
+        ServerResponse<UploadStatus, StudentDTO> serverResponse;
 
-        try{
-            URL obj = new URL(BASE_URL+"relations/positive/"+id);
-            HttpURLConnection connection = (HttpURLConnection) obj.openConnection();
-            connection.setRequestMethod("GET");
-            int responseCode = connection.getResponseCode();
-            if(responseCode == HttpURLConnection.HTTP_OK){
-                BufferedReader in = new BufferedReader(new InputStreamReader(connection.getInputStream()));
-                ObjectMapper mapper = new ObjectMapper();
-                mapper.registerModule(new JavaTimeModule());
-
-                List<UniversityEmployee> employeeList = mapper.readValue(in, new TypeReference<List<UniversityEmployee>>(){});
-                in.close();
-                return employeeList;
-            }
-
-        }catch (Exception e){
-            e.printStackTrace();
-        }
-        return new ArrayList<>();
-    }
-
-    public static List<UniversityEmployee> getNegativeRelationsById(UUID id) {
-
-        try{
-            URL obj = new URL(BASE_URL+"relations/negative/"+id);
-            HttpURLConnection connection = (HttpURLConnection) obj.openConnection();
-            connection.setRequestMethod("GET");
-            int responseCode = connection.getResponseCode();
-            if(responseCode == HttpURLConnection.HTTP_OK){
-                BufferedReader in = new BufferedReader(new InputStreamReader(connection.getInputStream()));
-                ObjectMapper mapper = new ObjectMapper();
-                mapper.registerModule(new JavaTimeModule());
-
-                List<UniversityEmployee> employeeList = mapper.readValue(in, new TypeReference<List<UniversityEmployee>>(){});
-                in.close();
-                return employeeList;
-            }
-
-        }catch (Exception e){
-            e.printStackTrace();
-        }
-        return new ArrayList<>();
-    }
-
-    public static boolean updateUniversityEmployeeById(UUID id, List<UniversityEmployee> universityEmployees) {
         try {
-            URL url = new URL(BASE_URL + "university-employees/" + id);
-            HttpURLConnection connection = (HttpURLConnection) url.openConnection();
-
-            connection.setRequestMethod("PUT");
-            connection.setRequestProperty("Content-Type", "application/json");
-            connection.setDoOutput(true);
-
-            ObjectMapper mapper = new ObjectMapper();
-            mapper.registerModule(new JavaTimeModule());
-            String jsonPayload = mapper.writeValueAsString(universityEmployees);
-
-            try (OutputStream os = connection.getOutputStream()) {
-                byte[] input = jsonPayload.getBytes("utf-8");
-                os.write(input, 0, input.length);
-            }
-
-            int responseCode = connection.getResponseCode();
-            if (responseCode == HttpURLConnection.HTTP_OK) {
-                return true;
-            }
+            serverResponse = OBJECT_MAPPER.readValue(httpResponse.body(),
+                    OBJECT_MAPPER.getTypeFactory().constructParametricType(ServerResponse.class, UploadStatus.class, StudentDTO.class));
         } catch (Exception e) {
-            e.printStackTrace();
+            return null;
         }
-        return false;
+
+        if (httpResponse.statusCode() >= 300) {
+            return new FullResponse<>(httpResponse.statusCode(), serverResponse.getStatus(), null);
+        }
+
+        return new FullResponse<>(httpResponse.statusCode(), serverResponse.getStatus(), serverResponse.getResponseBody());
     }
 
-    public static boolean uploadProblemParameters(UUID contextId, ProblemParameters problemParameters) {
+    public static Response<StudentDTO> getStudentsByContextId(UUID contextId) {
+        HttpRequest request = HttpRequest.newBuilder()
+                .uri(URI.create(BASE_URL + "students/" + contextId))
+                .GET()
+                .build();
+
+        HttpResponse<String> response;
         try {
-            URL url = new URL(BASE_URL + "problem-parameters/" + contextId);
-
-            HttpURLConnection connection = (HttpURLConnection) url.openConnection();
-            connection.setRequestMethod("POST");
-            connection.setRequestProperty("Content-Type", "application/json");
-            connection.setDoOutput(true);
-
-            ObjectMapper mapper = new ObjectMapper();
-            String jsonPayload = mapper.writeValueAsString(problemParameters);
-
-            try (OutputStream os = connection.getOutputStream()) {
-                byte[] input = jsonPayload.getBytes("utf-8");
-                os.write(input, 0, input.length);
-            }
-
-            int responseCode = connection.getResponseCode();
-            System.out.println("Upload problem parameters: " + responseCode);
-            if (responseCode == HttpURLConnection.HTTP_OK) {
-                return true;
-            }
+            response = CLIENT.send(request, HttpResponse.BodyHandlers.ofString());
         } catch (Exception e) {
-            e.printStackTrace();
+            return null;
         }
-        return false;
+
+        if (response.statusCode() < 300) {
+            try {
+                StudentDTO students = OBJECT_MAPPER.readValue(response.body(), StudentDTO.class);
+                return new Response<>(response.statusCode(), students);
+            } catch (Exception e) {
+                return null;
+            }
+        }
+        return new Response<>(response.statusCode(), null);
     }
 
-    public static boolean startCalculation(UUID contextId) {
+    public static Response<StudentDTO> updateStudentsByContextId(UUID contextId, List<Student> students) {
+        String jsonRequestBody;
         try {
-            URL url = new URL(BASE_URL + "problems/" + contextId);
-
-            HttpURLConnection connection = (HttpURLConnection) url.openConnection();
-            connection.setRequestMethod("POST");
-            connection.setRequestProperty("Content-Type", "application/json");
-            connection.setDoOutput(true);
-
-            int responseCode = connection.getResponseCode();
-            System.out.println("Start calculation: " + responseCode);
-            if (responseCode == HttpURLConnection.HTTP_OK) {
-                return true;
-            }
+            jsonRequestBody = OBJECT_MAPPER.writeValueAsString(students);
         } catch (Exception e) {
-            e.printStackTrace();
+            return null;
         }
-        return false;
+
+        HttpRequest request = HttpRequest.newBuilder()
+                .uri(URI.create(BASE_URL + "students/" + contextId))
+                .header("Content-Type", "application/json")
+                .PUT(HttpRequest.BodyPublishers.ofString(jsonRequestBody))
+                .build();
+
+        HttpResponse<String> response;
+        try {
+            response = CLIENT.send(request, HttpResponse.BodyHandlers.ofString());
+        } catch (Exception e) {
+            return null;
+        }
+
+        if (response.statusCode() < 300) {
+            try {
+                StudentDTO updatedStudents = OBJECT_MAPPER.readValue(response.body(), StudentDTO.class);
+                return new Response<>(response.statusCode(), updatedStudents);
+            } catch (Exception e) {
+                return null;
+            }
+        }
+        return new Response<>(response.statusCode(), null);
     }
 
-    public static ProblemParameters getProblemParametersById(UUID id) {
-        try{
-            URL obj = new URL(BASE_URL+"problem-parameters/"+id);
-            HttpURLConnection connection = (HttpURLConnection) obj.openConnection();
-            connection.setRequestMethod("GET");
-            int responseCode = connection.getResponseCode();
-            if(responseCode == HttpURLConnection.HTTP_OK){
-                BufferedReader in = new BufferedReader(new InputStreamReader(connection.getInputStream()));
-                ObjectMapper mapper = new ObjectMapper();
-                mapper.registerModule(new JavaTimeModule());
+    //DisplayInfo
 
-                ProblemParameters problemParameters = mapper.readValue(in,ProblemParameters.class);
-                in.close();
-                return problemParameters;
-            }
-
-        }catch (Exception e){
-            e.printStackTrace();
+    public static Response<ContextDisplayInfoDTO> createContextDisplayInfo(ContextDisplayInfoDTO contextDto) {
+        String jsonRequestBody;
+        try {
+            jsonRequestBody = OBJECT_MAPPER.writeValueAsString(contextDto);
+        } catch (Exception e) {
+            return null;
         }
-        return null;
+
+        HttpRequest request = HttpRequest.newBuilder()
+                .uri(URI.create(BASE_URL + "context-display-infos"))
+                .header("Content-Type", "application/json")
+                .POST(HttpRequest.BodyPublishers.ofString(jsonRequestBody))
+                .build();
+
+        HttpResponse<String> response;
+        try {
+            response = CLIENT.send(request, HttpResponse.BodyHandlers.ofString());
+        } catch (Exception e) {
+            return null;
+        }
+
+        if (response.statusCode() < 300) {
+            try {
+                ContextDisplayInfoDTO createdContext = OBJECT_MAPPER.readValue(response.body(), ContextDisplayInfoDTO.class);
+                return new Response<>(response.statusCode(), createdContext);
+            } catch (Exception e) {
+                return null;
+            }
+        }
+        return new Response<>(response.statusCode(), null);
+    }
+
+    public static Response<ContextDisplayInfoDTO> getContextDisplayInfoByContextId(UUID contextId) {
+        HttpRequest request = HttpRequest.newBuilder()
+                .uri(URI.create(BASE_URL + "context-display-infos/" + contextId))
+                .GET()
+                .build();
+
+        HttpResponse<String> response;
+        try {
+            response = CLIENT.send(request, HttpResponse.BodyHandlers.ofString());
+        } catch (Exception e) {
+            return null;
+        }
+
+        if (response.statusCode() < 300) {
+            try {
+                ContextDisplayInfoDTO context = OBJECT_MAPPER.readValue(response.body(), ContextDisplayInfoDTO.class);
+                return new Response<>(response.statusCode(), context);
+            } catch (Exception e) {
+                return null;
+            }
+        }
+        return new Response<>(response.statusCode(), null);
+    }
+
+    public static Response<List<ContextDisplayInfoDTO>> getAllContextDisplayInfos() {
+        HttpRequest request = HttpRequest.newBuilder()
+                .uri(URI.create(BASE_URL + "context-display-infos"))
+                .GET()
+                .build();
+
+        HttpResponse<String> response;
+        try {
+            response = CLIENT.send(request, HttpResponse.BodyHandlers.ofString());
+        } catch (Exception e) {
+            return null;
+        }
+
+        if (response.statusCode() < 300) {
+            try {
+                List<ContextDisplayInfoDTO> contexts = OBJECT_MAPPER.readValue(response.body(), new TypeReference<List<ContextDisplayInfoDTO>>() {});
+                return new Response<>(response.statusCode(), contexts);
+            } catch (Exception e) {
+                return null;
+            }
+        }
+        return new Response<>(response.statusCode(), null);
+    }
+
+    public static Response<ContextDisplayInfoDTO> updateContextDisplayInfoByContextId(UUID contextId, ContextDisplayInfoDTO contextDto) {
+        String jsonRequestBody;
+        try {
+            jsonRequestBody = OBJECT_MAPPER.writeValueAsString(contextDto);
+        } catch (Exception e) {
+            return null;
+        }
+
+        HttpRequest request = HttpRequest.newBuilder()
+                .uri(URI.create(BASE_URL + "context-display-infos/" + contextId))
+                .header("Content-Type", "application/json")
+                .PUT(HttpRequest.BodyPublishers.ofString(jsonRequestBody))
+                .build();
+
+        HttpResponse<String> response;
+        try {
+            response = CLIENT.send(request, HttpResponse.BodyHandlers.ofString());
+        } catch (Exception e) {
+            return null;
+        }
+
+        if (response.statusCode() < 300) {
+            try {
+                ContextDisplayInfoDTO updatedContext = OBJECT_MAPPER.readValue(response.body(), ContextDisplayInfoDTO.class);
+                return new Response<>(response.statusCode(), updatedContext);
+            } catch (Exception e) {
+                return null;
+            }
+        }
+        return new Response<>(response.statusCode(), null);
+    }
+
+    public static Response<Void> deleteContextDisplayInfoByContextId(UUID contextId) {
+        HttpRequest request = HttpRequest.newBuilder()
+                .uri(URI.create(BASE_URL + "context-display-infos/" + contextId))
+                .DELETE()
+                .build();
+
+        HttpResponse<String> response;
+        try {
+            response = CLIENT.send(request, HttpResponse.BodyHandlers.ofString());
+        } catch (Exception e) {
+            return null;
+        }
+
+        if (response.statusCode() < 300) {
+            return new Response<>(response.statusCode(), null);
+        }
+        return new Response<>(response.statusCode(), null);
+    }
+
+    // Problem Parameters
+    public static Response<ProblemParametersDTO> setProblemParametersByContextId(UUID contextId, ProblemParameters problemParameters) {
+        String jsonRequestBody;
+        try {
+            jsonRequestBody = OBJECT_MAPPER.writeValueAsString(problemParameters);
+        } catch (Exception e) {
+            return null;
+        }
+
+        HttpRequest request = HttpRequest.newBuilder()
+                .uri(URI.create(BASE_URL + "problem-parameters/" + contextId))
+                .header("Content-Type", "application/json")
+                .POST(HttpRequest.BodyPublishers.ofString(jsonRequestBody))
+                .build();
+
+        HttpResponse<String> response;
+        try {
+            response = CLIENT.send(request, HttpResponse.BodyHandlers.ofString());
+        } catch (Exception e) {
+            return null;
+        }
+
+        if (response.statusCode() < 300) {
+            try {
+                ProblemParametersDTO result = OBJECT_MAPPER.readValue(response.body(), ProblemParametersDTO.class);
+                return new Response<>(response.statusCode(), result);
+            } catch (Exception e) {
+                return null;
+            }
+        }
+        return new Response<>(response.statusCode(), null);
+    }
+
+    public static Response<ProblemParametersDTO> getProblemParametersByContextId(UUID contextId) {
+        HttpRequest request = HttpRequest.newBuilder()
+                .uri(URI.create(BASE_URL + "problem-parameters/" + contextId))
+                .GET()
+                .build();
+
+        HttpResponse<String> response;
+        try {
+            response = CLIENT.send(request, HttpResponse.BodyHandlers.ofString());
+        } catch (Exception e) {
+            return null;
+        }
+
+        if (response.statusCode() < 300) {
+            try {
+                ProblemParametersDTO result = OBJECT_MAPPER.readValue(response.body(), ProblemParametersDTO.class);
+                return new Response<>(response.statusCode(), result);
+            } catch (Exception e) {
+                return null;
+            }
+        }
+        return new Response<>(response.statusCode(), null);
+    }
+
+    public static Response<ProblemParametersDTO> updateProblemParametersByContextId(UUID contextId, ProblemParameters problemParameters) {
+        String jsonRequestBody;
+        try {
+            jsonRequestBody = OBJECT_MAPPER.writeValueAsString(problemParameters);
+        } catch (Exception e) {
+            return null;
+        }
+
+        HttpRequest request = HttpRequest.newBuilder()
+                .uri(URI.create(BASE_URL + "problem-parameters/" + contextId))
+                .header("Content-Type", "application/json")
+                .PUT(HttpRequest.BodyPublishers.ofString(jsonRequestBody))
+                .build();
+
+        HttpResponse<String> response;
+        try {
+            response = CLIENT.send(request, HttpResponse.BodyHandlers.ofString());
+        } catch (Exception e) {
+            return null;
+        }
+
+        if (response.statusCode() < 300) {
+            try {
+                ProblemParametersDTO result = OBJECT_MAPPER.readValue(response.body(), ProblemParametersDTO.class);
+                return new Response<>(response.statusCode(), result);
+            } catch (Exception e) {
+                return null;
+            }
+        }
+        return new Response<>(response.statusCode(), null);
+    }
+
+    public static Response<RelationDTO> addPositiveRelationByContextId(UUID contextId, List<UUID> relations) {
+        String jsonRequestBody;
+        try {
+            jsonRequestBody = OBJECT_MAPPER.writeValueAsString(relations);
+        } catch (Exception e) {
+            return null;
+        }
+
+        HttpRequest request = HttpRequest.newBuilder()
+                .uri(URI.create(BASE_URL + "relations/positive/" + contextId))
+                .header("Content-Type", "application/json")
+                .POST(HttpRequest.BodyPublishers.ofString(jsonRequestBody))
+                .build();
+
+        HttpResponse<String> response;
+        try {
+            response = CLIENT.send(request, HttpResponse.BodyHandlers.ofString());
+        } catch (Exception e) {
+            return null;
+        }
+
+        if (response.statusCode() < 300) {
+            try {
+                RelationDTO relationDTO = OBJECT_MAPPER.readValue(response.body(), RelationDTO.class);
+                return new Response<>(response.statusCode(), relationDTO);
+            } catch (Exception e) {
+                return null;
+            }
+        }
+        return new Response<>(response.statusCode(), null);
+    }
+
+    public static Response<RelationDTO> addNegativeRelationByContextId(UUID contextId, List<UUID> relations) {
+        String jsonRequestBody;
+        try {
+            jsonRequestBody = OBJECT_MAPPER.writeValueAsString(relations);
+        } catch (Exception e) {
+            return null;
+        }
+
+        HttpRequest request = HttpRequest.newBuilder()
+                .uri(URI.create(BASE_URL + "relations/negative/" + contextId))
+                .header("Content-Type", "application/json")
+                .POST(HttpRequest.BodyPublishers.ofString(jsonRequestBody))
+                .build();
+
+        HttpResponse<String> response;
+        try {
+            response = CLIENT.send(request, HttpResponse.BodyHandlers.ofString());
+        } catch (Exception e) {
+            return null;
+        }
+
+        if (response.statusCode() < 300) {
+            try {
+                RelationDTO relationDTO = OBJECT_MAPPER.readValue(response.body(), RelationDTO.class);
+                return new Response<>(response.statusCode(), relationDTO);
+            } catch (Exception e) {
+                return null;
+            }
+        }
+        return new Response<>(response.statusCode(), null);
+    }
+
+    public static Response<RelationDTO> updatePositiveRelationByContextId(UUID contextId, List<UUID> relations) {
+        String jsonRequestBody;
+        try {
+            jsonRequestBody = OBJECT_MAPPER.writeValueAsString(relations);
+        } catch (Exception e) {
+            return null;
+        }
+
+        HttpRequest request = HttpRequest.newBuilder()
+                .uri(URI.create(BASE_URL + "relations/positive/" + contextId))
+                .header("Content-Type", "application/json")
+                .PUT(HttpRequest.BodyPublishers.ofString(jsonRequestBody))
+                .build();
+
+        HttpResponse<String> response;
+        try {
+            response = CLIENT.send(request, HttpResponse.BodyHandlers.ofString());
+        } catch (Exception e) {
+            return null;
+        }
+
+        if (response.statusCode() < 300) {
+            try {
+                RelationDTO relationDTO = OBJECT_MAPPER.readValue(response.body(), RelationDTO.class);
+                return new Response<>(response.statusCode(), relationDTO);
+            } catch (Exception e) {
+                return null;
+            }
+        }
+        return new Response<>(response.statusCode(), null);
+    }
+
+    public static Response<RelationDTO> updateNegativeRelationByContextId(UUID contextId, List<UUID> relations) {
+        String jsonRequestBody;
+        try {
+            jsonRequestBody = OBJECT_MAPPER.writeValueAsString(relations);
+        } catch (Exception e) {
+            return null;
+        }
+
+        HttpRequest request = HttpRequest.newBuilder()
+                .uri(URI.create(BASE_URL + "relations/negative/" + contextId))
+                .header("Content-Type", "application/json")
+                .PUT(HttpRequest.BodyPublishers.ofString(jsonRequestBody))
+                .build();
+
+        HttpResponse<String> response;
+        try {
+            response = CLIENT.send(request, HttpResponse.BodyHandlers.ofString());
+        } catch (Exception e) {
+            return null;
+        }
+
+        if (response.statusCode() < 300) {
+            try {
+                RelationDTO relationDTO = OBJECT_MAPPER.readValue(response.body(), RelationDTO.class);
+                return new Response<>(response.statusCode(), relationDTO);
+            } catch (Exception e) {
+                return null;
+            }
+        }
+        return new Response<>(response.statusCode(), null);
+    }
+
+    public static Response<RelationDTO> getPositiveRelationsByContextId(UUID contextId) {
+        HttpRequest request = HttpRequest.newBuilder()
+                .uri(URI.create(BASE_URL + "relations/positive/" + contextId))
+                .GET()
+                .build();
+
+        HttpResponse<String> response;
+        try {
+            response = CLIENT.send(request, HttpResponse.BodyHandlers.ofString());
+        } catch (Exception e) {
+            return null;
+        }
+
+        if (response.statusCode() < 300) {
+            try {
+                RelationDTO relationDTO = OBJECT_MAPPER.readValue(response.body(), RelationDTO.class);
+                return new Response<>(response.statusCode(), relationDTO);
+            } catch (Exception e) {
+                return null;
+            }
+        }
+        return new Response<>(response.statusCode(), null);
+    }
+
+    public static Response<RelationDTO> getNegativeRelationsByContextId(UUID contextId) {
+        HttpRequest request = HttpRequest.newBuilder()
+                .uri(URI.create(BASE_URL + "relations/negative/" + contextId))
+                .GET()
+                .build();
+
+        HttpResponse<String> response;
+        try {
+            response = CLIENT.send(request, HttpResponse.BodyHandlers.ofString());
+        } catch (Exception e) {
+            return null;
+        }
+
+        if (response.statusCode() < 300) {
+            try {
+                RelationDTO relationDTO = OBJECT_MAPPER.readValue(response.body(), RelationDTO.class);
+                return new Response<>(response.statusCode(), relationDTO);
+            } catch (Exception e) {
+                return null;
+            }
+        }
+        return new Response<>(response.statusCode(), null);
+    }
+
+    public static FullResponse<CalculationStartStatus, ProblemDTO> startCalculationByContextId(UUID contextId) {
+        HttpRequest request = HttpRequest.newBuilder()
+                .uri(URI.create(BASE_URL + "problems/" + contextId))
+                .GET()
+                .build();
+
+        HttpResponse<String> httpResponse;
+        try {
+            httpResponse = CLIENT.send(request, HttpResponse.BodyHandlers.ofString());
+        } catch (Exception e) {
+            return null;
+        }
+
+        ServerResponse<CalculationStartStatus, ProblemDTO> serverResponse;
+
+        try {
+            serverResponse = OBJECT_MAPPER.readValue(httpResponse.body(),
+                    OBJECT_MAPPER.getTypeFactory().constructParametricType(ServerResponse.class, CalculationStartStatus.class, ProblemDTO.class));
+        } catch (Exception e) {
+            return null;
+        }
+
+        if (httpResponse.statusCode() >= 300) {
+            return new FullResponse<>(httpResponse.statusCode(), serverResponse.getStatus(), null);
+        }
+
+        return new FullResponse<>(httpResponse.statusCode(), serverResponse.getStatus(), serverResponse.getResponseBody());
+    }
+
+    public static Response<SolutionDTO> getSolutionByContextId(UUID contextId) {
+        HttpRequest request = HttpRequest.newBuilder()
+                .uri(URI.create(BASE_URL + "solutions/" + contextId))
+                .GET()
+                .build();
+
+        HttpResponse<String> response;
+        try {
+            response = CLIENT.send(request, HttpResponse.BodyHandlers.ofString());
+        } catch (Exception e) {
+            return null;
+        }
+
+        if (response.statusCode() < 300) {
+            try {
+                SolutionDTO solution = OBJECT_MAPPER.readValue(response.body(), SolutionDTO.class);
+                return new Response<>(response.statusCode(), solution);
+            } catch (Exception e) {
+                return null;
+            }
+        }
+        return new Response<>(response.statusCode(), null);
+    }
+
+    public static Response<SolutionDTO> updateSolutionByContextId(UUID contextId, SolutionDTO solutionDTO) {
+        String jsonRequestBody;
+        try {
+            jsonRequestBody = OBJECT_MAPPER.writeValueAsString(solutionDTO);
+        } catch (Exception e) {
+            return null;
+        }
+
+        HttpRequest request = HttpRequest.newBuilder()
+                .uri(URI.create(BASE_URL + "solutions/" + contextId))
+                .header("Content-Type", "application/json")
+                .PUT(HttpRequest.BodyPublishers.ofString(jsonRequestBody))
+                .build();
+
+        HttpResponse<String> response;
+        try {
+            response = CLIENT.send(request, HttpResponse.BodyHandlers.ofString());
+        } catch (Exception e) {
+            return null;
+        }
+
+        if (response.statusCode() < 300) {
+            try {
+                SolutionDTO updatedSolution = OBJECT_MAPPER.readValue(response.body(), SolutionDTO.class);
+                return new Response<>(response.statusCode(), updatedSolution);
+            } catch (Exception e) {
+                return null;
+            }
+        }
+        return new Response<>(response.statusCode(), null);
+    }
+
+    public static Response<SolutionDTO> setSolutionByContextId(UUID contextId, SolutionDTO solutionDTO) {
+        String jsonRequestBody;
+        try {
+            jsonRequestBody = OBJECT_MAPPER.writeValueAsString(solutionDTO);
+        } catch (Exception e) {
+            return null;
+        }
+
+        HttpRequest request = HttpRequest.newBuilder()
+                .uri(URI.create(BASE_URL + "solutions/" + contextId))
+                .header("Content-Type", "application/json")
+                .POST(HttpRequest.BodyPublishers.ofString(jsonRequestBody))
+                .build();
+
+        HttpResponse<String> response;
+        try {
+            response = CLIENT.send(request, HttpResponse.BodyHandlers.ofString());
+        } catch (Exception e) {
+            return null;
+        }
+
+        if (response.statusCode() < 300) {
+            try {
+                SolutionDTO newSolution = OBJECT_MAPPER.readValue(response.body(), SolutionDTO.class);
+                return new Response<>(response.statusCode(), newSolution);
+            } catch (Exception e) {
+                return null;
+            }
+        }
+        return new Response<>(response.statusCode(), null);
     }
 }
