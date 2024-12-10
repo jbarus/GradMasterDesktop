@@ -289,31 +289,61 @@ public class DetailsController {
 
     @FXML
     void deleteCommitteeButtonClicked(MouseEvent event) {
-
+        Committee committee = solutionTable.getSelectionModel().getSelectedItem();
+        if(committee != null){
+            Context.getInstance().getCommittees().remove(committee);
+            SolutionDTO solutionDTO = new SolutionDTO();
+            solutionDTO.setId(Context.getInstance().getId());
+            solutionDTO.setCommittees(Context.getInstance().getCommittees());
+            solutionDTO.setUnassignedStudents(Context.getInstance().getUnassignedStudents());
+            solutionDTO.setUnassignedUniversityEmployees(Context.getInstance().getUnassignedUniversityEmployee());
+            HTTPRequests.updateSolutionByContextId(Context.getInstance().getId(), solutionDTO);
+        }
     }
 
     @FXML
     void editStudentButtonClicked(MouseEvent event) {
+        Student selectedStudent = studentTable.getSelectionModel().getSelectedItem();
+        if(selectedStudent != null){
+            try {
+                FXMLLoader fxmlLoader = new FXMLLoader(GradMasterDesktopApplication.class.getResource("edit-student-view.fxml"));
+                Scene scene = new Scene(fxmlLoader.load());
 
+                EditStudentController controller = fxmlLoader.getController();
+
+                controller.setSelectedStudent(selectedStudent);
+                controller.loadData();
+
+                Stage stage = new Stage();
+                stage.setTitle("GradMaster");
+                stage.setScene(scene);
+                stage.show();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
     }
 
     @FXML
     void editUniversityEmployeeButtonClicked(MouseEvent event) {
-        try {
-            FXMLLoader fxmlLoader = new FXMLLoader(GradMasterDesktopApplication.class.getResource("edit-university-employee-view.fxml"));
-            Scene scene = new Scene(fxmlLoader.load());
+        UniversityEmployee universityEmployee = universityEmployeeTable.getSelectionModel().getSelectedItem();
+        if(universityEmployee != null){
+            try {
+                FXMLLoader fxmlLoader = new FXMLLoader(GradMasterDesktopApplication.class.getResource("edit-university-employee-view.fxml"));
+                Scene scene = new Scene(fxmlLoader.load());
 
-            EditUniversityEmployeeController controller = fxmlLoader.getController();
-            UniversityEmployee universityEmployee = universityEmployeeTable.getSelectionModel().getSelectedItem();
-            controller.setSelectedUniversityEmployee(universityEmployee);
-            controller.loadData();
+                EditUniversityEmployeeController controller = fxmlLoader.getController();
 
-            Stage stage = new Stage();
-            stage.setTitle("GradMaster");
-            stage.setScene(scene);
-            stage.show();
-        } catch (IOException e) {
-            e.printStackTrace();
+                controller.setSelectedUniversityEmployee(universityEmployee);
+                controller.loadData();
+
+                Stage stage = new Stage();
+                stage.setTitle("GradMaster");
+                stage.setScene(scene);
+                stage.show();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
         }
     }
 
