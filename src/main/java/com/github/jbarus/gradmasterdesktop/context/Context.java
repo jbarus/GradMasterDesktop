@@ -1,13 +1,13 @@
 package com.github.jbarus.gradmasterdesktop.context;
 
 import com.github.jbarus.gradmasterdesktop.models.*;
+import com.github.jbarus.gradmasterdesktop.models.dto.ContextDisplayInfoDTO;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import lombok.Getter;
 import lombok.Setter;
 
 import java.time.LocalDate;
-import java.util.List;
 import java.util.UUID;
 
 @Getter
@@ -23,8 +23,8 @@ public class Context {
     private ObservableList<UniversityEmployeeRelation> positiveRelations = FXCollections.observableArrayList();
     private ObservableList<UniversityEmployeeRelation> negativeRelations = FXCollections.observableArrayList();
     private ObservableList<ContextDisplayInfoDTO> contextDisplayInfoDTOS = FXCollections.observableArrayList();
-    private LocalDate date;
-    private String name;
+    private LocalDate date = null;
+    private String name = null;
     private Committee selectedCommittee = null;
 
     private Context() {

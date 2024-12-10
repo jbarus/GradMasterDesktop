@@ -1,7 +1,10 @@
 package com.github.jbarus.gradmasterdesktop.models.communication;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.Getter;
+
+import java.util.Map;
 
 @Getter
 @JsonFormat(shape = JsonFormat.Shape.OBJECT)
@@ -22,5 +25,17 @@ public enum CalculationStartStatus {
     CalculationStartStatus(int statusCode, String statusMessage) {
         this.statusCode = statusCode;
         this.statusMessage = statusMessage;
+    }
+
+    @JsonCreator
+    public static CalculationStartStatus fromJson(Map<String, Object> json) {
+        Integer statusCode = (Integer) json.get("statusCode");
+        for (CalculationStartStatus status : values()) {
+            if (status.statusCode == statusCode) {
+                System.out.println("Siema "+ status);
+                return status;
+            }
+        }
+        throw new IllegalArgumentException("Unknown statusCode: " + statusCode);
     }
 }

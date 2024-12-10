@@ -2,7 +2,9 @@ package com.github.jbarus.gradmasterdesktop.controllers;
 
 import com.github.jbarus.gradmasterdesktop.GradMasterDesktopApplication;
 import com.github.jbarus.gradmasterdesktop.communication.HTTPRequests;
-import com.github.jbarus.gradmasterdesktop.models.UniversityEmployeeDTO;
+import com.github.jbarus.gradmasterdesktop.models.communication.FullResponse;
+import com.github.jbarus.gradmasterdesktop.models.communication.UploadStatus;
+import com.github.jbarus.gradmasterdesktop.models.dto.UniversityEmployeeDTO;
 import com.github.jbarus.gradmasterdesktop.models.communication.Response;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -54,12 +56,13 @@ public class UniversityEmployeeFileUploadController {
 
     @FXML
     void nextButtonClicked(MouseEvent event) {
-        Response<UniversityEmployeeDTO> response = null;
+        FullResponse<UploadStatus, UniversityEmployeeDTO> response = null;
 
         if (selectedFile != null) {
             response = HTTPRequests.uploadUniversityEmployeesFileByContextId(contextId, selectedFile);
         }
         if(response != null && response.getHTTPStatusCode() < 300){
+            System.out.println(response.getHTTPStatusCode());
             try {
                 FXMLLoader fxmlLoader = new FXMLLoader(GradMasterDesktopApplication.class.getResource("student-file-upload-view.fxml"));
                 Scene scene = new Scene(fxmlLoader.load());

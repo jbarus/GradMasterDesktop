@@ -1,7 +1,11 @@
 package com.github.jbarus.gradmasterdesktop.models.communication;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.Getter;
+import lombok.Setter;
+
+import java.util.Map;
 
 @Getter
 @JsonFormat(shape = JsonFormat.Shape.OBJECT)
@@ -22,5 +26,16 @@ public enum UploadStatus {
     UploadStatus(int statusCode, String statusMessage) {
         this.statusCode = statusCode;
         this.statusMessage = statusMessage;
+    }
+
+    @JsonCreator
+    public static UploadStatus fromJson(Map<String, Object> json) {
+        Integer statusCode = (Integer) json.get("statusCode");
+        for (UploadStatus status : values()) {
+            if (status.statusCode == statusCode) {
+                return status;
+            }
+        }
+        throw new IllegalArgumentException("Unknown statusCode: " + statusCode);
     }
 }

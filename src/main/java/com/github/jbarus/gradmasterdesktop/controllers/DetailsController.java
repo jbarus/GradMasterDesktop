@@ -5,9 +5,7 @@ import com.github.jbarus.gradmasterdesktop.communication.HTTPRequests;
 import com.github.jbarus.gradmasterdesktop.context.Context;
 import com.github.jbarus.gradmasterdesktop.models.*;
 import com.github.jbarus.gradmasterdesktop.models.communication.Response;
-import com.github.jbarus.gradmasterdesktop.models.dto.ProblemParametersDTO;
-import com.github.jbarus.gradmasterdesktop.models.dto.RelationDTO;
-import com.github.jbarus.gradmasterdesktop.models.dto.StudentDTO;
+import com.github.jbarus.gradmasterdesktop.models.dto.*;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -230,12 +228,14 @@ public class DetailsController {
             if(response.getBody().getUnassignedStudents() != null) {
                 Context.getInstance().getUnassignedStudents().addAll(response.getBody().getUnassignedStudents());
             }
+            if(response.getBody().getUnassignedUniversityEmployees() != null){
+                Context.getInstance().getUnassignedUniversityEmployee().addAll(response.getBody().getUnassignedUniversityEmployees());
+            }
         }
 
         solutionTable.setItems(Context.getInstance().getCommittees());
         unassignedStudentTable.setItems(Context.getInstance().getUnassignedStudents());
         unassignedUniversityEmployeeTable.setItems(Context.getInstance().getUnassignedUniversityEmployee());
-
     }
 
     private void initializeStudents() {

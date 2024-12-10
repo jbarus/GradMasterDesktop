@@ -10,7 +10,6 @@ import lombok.Setter;
 @NoArgsConstructor
 @AllArgsConstructor
 public class FullResponse<T,V> extends Response<V> {
-    private int HTTPStatusCode;
     private T serverCode;
 
     public FullResponse(int HTTPStatusCode, T serverCode, V body) {

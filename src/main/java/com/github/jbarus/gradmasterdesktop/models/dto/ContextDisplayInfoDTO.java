@@ -1,4 +1,4 @@
-package com.github.jbarus.gradmasterdesktop.models;
+package com.github.jbarus.gradmasterdesktop.models.dto;
 
 import lombok.*;
 

@@ -1,5 +1,6 @@
-package com.github.jbarus.gradmasterdesktop.models;
+package com.github.jbarus.gradmasterdesktop.models.dto;
 
+import com.github.jbarus.gradmasterdesktop.models.UniversityEmployee;
 import lombok.*;
 
 import java.util.List;

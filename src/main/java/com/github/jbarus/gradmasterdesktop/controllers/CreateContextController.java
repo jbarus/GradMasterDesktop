@@ -3,7 +3,7 @@ package com.github.jbarus.gradmasterdesktop.controllers;
 import com.github.jbarus.gradmasterdesktop.GradMasterDesktopApplication;
 import com.github.jbarus.gradmasterdesktop.communication.HTTPRequests;
 import com.github.jbarus.gradmasterdesktop.context.Context;
-import com.github.jbarus.gradmasterdesktop.models.ContextDisplayInfoDTO;
+import com.github.jbarus.gradmasterdesktop.models.dto.ContextDisplayInfoDTO;
 import com.github.jbarus.gradmasterdesktop.models.communication.Response;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;

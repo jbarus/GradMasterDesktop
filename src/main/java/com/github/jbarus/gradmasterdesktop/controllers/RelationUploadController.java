@@ -3,7 +3,7 @@ package com.github.jbarus.gradmasterdesktop.controllers;
 import com.github.jbarus.gradmasterdesktop.communication.HTTPRequests;
 import com.github.jbarus.gradmasterdesktop.context.Context;
 import com.github.jbarus.gradmasterdesktop.models.UniversityEmployee;
-import com.github.jbarus.gradmasterdesktop.models.UniversityEmployeeDTO;
+import com.github.jbarus.gradmasterdesktop.models.dto.UniversityEmployeeDTO;
 import com.github.jbarus.gradmasterdesktop.models.UniversityEmployeeRelation;
 import com.github.jbarus.gradmasterdesktop.models.communication.Response;
 import com.github.jbarus.gradmasterdesktop.models.dto.RelationDTO;

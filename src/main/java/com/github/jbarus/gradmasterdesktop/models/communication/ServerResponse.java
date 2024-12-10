@@ -17,4 +17,7 @@ public class ServerResponse<T, V> {
         this.status = status;
         this.responseBody = responseBody;
     }
+
+    public ServerResponse() {
+    }
 }

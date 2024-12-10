@@ -1,8 +1,10 @@
 package com.github.jbarus.gradmasterdesktop.controllers;
 
+import com.github.jbarus.gradmasterdesktop.communication.HTTPRequests;
 import com.github.jbarus.gradmasterdesktop.context.Context;
 import com.github.jbarus.gradmasterdesktop.models.Student;
 import com.github.jbarus.gradmasterdesktop.models.UniversityEmployee;
+import com.github.jbarus.gradmasterdesktop.models.dto.SolutionDTO;
 import javafx.collections.FXCollections;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
@@ -88,6 +90,9 @@ public class EditCommitteeController {
     private TableView<UniversityEmployee> universityEmployeeTable;
 
     @FXML
+    private Button saveButton;
+
+    @FXML
     public void initialize(){
         initializeUniversityEmployees();
         initializeStudents();
@@ -166,6 +171,16 @@ public class EditCommitteeController {
             Context.getInstance().getSelectedCommittee().getUniversityEmployees().add(selectedUniversityEmployee);
             Context.getInstance().getUnassignedUniversityEmployee().remove(selectedUniversityEmployee);
         }
+    }
+
+    @FXML
+    void saveButtonClicked(MouseEvent event){
+        SolutionDTO solutionDTO = new SolutionDTO();
+        solutionDTO.setCommittees(Context.getInstance().getCommittees());
+        solutionDTO.setUnassignedStudents(Context.getInstance().getUnassignedStudents());
+        solutionDTO.setUnassignedUniversityEmployees(Context.getInstance().getUnassignedUniversityEmployee());
+
+        HTTPRequests.updateSolutionByContextId(Context.getInstance().getId(), solutionDTO);
     }
 
 }

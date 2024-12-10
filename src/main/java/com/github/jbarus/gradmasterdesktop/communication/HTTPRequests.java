@@ -5,17 +5,17 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.github.jbarus.gradmasterdesktop.models.*;
 import com.github.jbarus.gradmasterdesktop.models.communication.*;
-import com.github.jbarus.gradmasterdesktop.models.dto.ProblemDTO;
-import com.github.jbarus.gradmasterdesktop.models.dto.ProblemParametersDTO;
-import com.github.jbarus.gradmasterdesktop.models.dto.RelationDTO;
-import com.github.jbarus.gradmasterdesktop.models.dto.StudentDTO;
+import com.github.jbarus.gradmasterdesktop.models.dto.*;
 
+import java.io.ByteArrayOutputStream;
 import java.io.File;
+import java.io.IOException;
 import java.net.URI;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 
 public class HTTPRequests {
@@ -30,26 +30,22 @@ public class HTTPRequests {
     public static FullResponse<UploadStatus, UniversityEmployeeDTO> uploadUniversityEmployeesFileByContextId(UUID contextId, File file) {
         String boundary = "Boundary-" + System.currentTimeMillis();
 
-        StringBuilder multipartBody = new StringBuilder();
-        multipartBody.append("--").append(boundary).append("\r\n")
-                .append("Content-Disposition: form-data; name=\"universityEmployees\"; filename=\"" + file.getName() + "\"\r\n")
-                .append("Content-Type: application/octet-stream\r\n\r\n");
-
-        byte[] fileBytes;
-
+        ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
         try {
-            fileBytes = java.nio.file.Files.readAllBytes(file.toPath());
-        } catch (Exception e) {
+            outputStream.write(("--" + boundary + "\r\n").getBytes());
+            outputStream.write(("Content-Disposition: form-data; name=\"universityEmployees\"; filename=\"" + file.getName() + "\"\r\n").getBytes());
+            outputStream.write(("Content-Type: application/octet-stream\r\n\r\n").getBytes());
+
+            outputStream.write(java.nio.file.Files.readAllBytes(file.toPath()));
+            outputStream.write(("\r\n--" + boundary + "--\r\n").getBytes());
+        } catch (IOException e) {
             return null;
         }
-
-        multipartBody.append(new String(fileBytes)).append("\r\n")
-                .append("--").append(boundary).append("--\r\n");
 
         HttpRequest request = HttpRequest.newBuilder()
                 .uri(URI.create(BASE_URL + "university-employees/" + contextId))
                 .header("Content-Type", "multipart/form-data; boundary=" + boundary)
-                .POST(HttpRequest.BodyPublishers.ofString(multipartBody.toString()))
+                .POST(HttpRequest.BodyPublishers.ofByteArray(outputStream.toByteArray()))
                 .build();
 
         HttpResponse<String> httpResponse;
@@ -138,26 +134,22 @@ public class HTTPRequests {
     public static FullResponse<UploadStatus, StudentDTO> uploadStudentFileByContextId(UUID contextId, File file) {
         String boundary = "Boundary-" + System.currentTimeMillis();
 
-        StringBuilder multipartBody = new StringBuilder();
-        multipartBody.append("--").append(boundary).append("\r\n")
-                .append("Content-Disposition: form-data; name=\"students\"; filename=\"" + file.getName() + "\"\r\n")
-                .append("Content-Type: application/octet-stream\r\n\r\n");
-
-        byte[] fileBytes;
-
+        ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
         try {
-            fileBytes = java.nio.file.Files.readAllBytes(file.toPath());
-        } catch (Exception e) {
+            outputStream.write(("--" + boundary + "\r\n").getBytes());
+            outputStream.write(("Content-Disposition: form-data; name=\"students\"; filename=\"" + file.getName() + "\"\r\n").getBytes());
+            outputStream.write(("Content-Type: application/octet-stream\r\n\r\n").getBytes());
+
+            outputStream.write(java.nio.file.Files.readAllBytes(file.toPath()));
+            outputStream.write(("\r\n--" + boundary + "--\r\n").getBytes());
+        } catch (IOException e) {
             return null;
         }
-
-        multipartBody.append(new String(fileBytes)).append("\r\n")
-                .append("--").append(boundary).append("--\r\n");
 
         HttpRequest request = HttpRequest.newBuilder()
                 .uri(URI.create(BASE_URL + "students/" + contextId))
                 .header("Content-Type", "multipart/form-data; boundary=" + boundary)
-                .POST(HttpRequest.BodyPublishers.ofString(multipartBody.toString()))
+                .POST(HttpRequest.BodyPublishers.ofByteArray(outputStream.toByteArray()))
                 .build();
 
         HttpResponse<String> httpResponse;
@@ -640,7 +632,7 @@ public class HTTPRequests {
     public static FullResponse<CalculationStartStatus, ProblemDTO> startCalculationByContextId(UUID contextId) {
         HttpRequest request = HttpRequest.newBuilder()
                 .uri(URI.create(BASE_URL + "problems/" + contextId))
-                .GET()
+                .POST(HttpRequest.BodyPublishers.noBody())
                 .build();
 
         HttpResponse<String> httpResponse;
