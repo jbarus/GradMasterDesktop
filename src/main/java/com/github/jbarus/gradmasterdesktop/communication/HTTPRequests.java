@@ -109,7 +109,7 @@ public class HTTPRequests {
         HttpRequest request = HttpRequest.newBuilder()
                 .uri(URI.create(BASE_URL + "university-employees/" + contextId))
                 .header("Content-Type", "application/json")
-                .PUT(HttpRequest.BodyPublishers.ofString(jsonRequestBody))
+                .method("PATCH", HttpRequest.BodyPublishers.ofString(jsonRequestBody))
                 .build();
 
         HttpResponse<String> response;
@@ -210,7 +210,7 @@ public class HTTPRequests {
         HttpRequest request = HttpRequest.newBuilder()
                 .uri(URI.create(BASE_URL + "students/" + contextId))
                 .header("Content-Type", "application/json")
-                .PUT(HttpRequest.BodyPublishers.ofString(jsonRequestBody))
+                .method("PATCH", HttpRequest.BodyPublishers.ofString(jsonRequestBody))
                 .build();
 
         HttpResponse<String> response;
@@ -324,7 +324,7 @@ public class HTTPRequests {
         HttpRequest request = HttpRequest.newBuilder()
                 .uri(URI.create(BASE_URL + "context-display-infos/" + contextId))
                 .header("Content-Type", "application/json")
-                .PUT(HttpRequest.BodyPublishers.ofString(jsonRequestBody))
+                .method("PATCH", HttpRequest.BodyPublishers.ofString(jsonRequestBody))
                 .build();
 
         HttpResponse<String> response;
@@ -432,7 +432,7 @@ public class HTTPRequests {
         HttpRequest request = HttpRequest.newBuilder()
                 .uri(URI.create(BASE_URL + "problem-parameters/" + contextId))
                 .header("Content-Type", "application/json")
-                .PUT(HttpRequest.BodyPublishers.ofString(jsonRequestBody))
+                .method("PATCH", HttpRequest.BodyPublishers.ofString(jsonRequestBody))
                 .build();
 
         HttpResponse<String> response;
@@ -528,7 +528,7 @@ public class HTTPRequests {
         HttpRequest request = HttpRequest.newBuilder()
                 .uri(URI.create(BASE_URL + "relations/positive/" + contextId))
                 .header("Content-Type", "application/json")
-                .PUT(HttpRequest.BodyPublishers.ofString(jsonRequestBody))
+                .method("PATCH", HttpRequest.BodyPublishers.ofString(jsonRequestBody))
                 .build();
 
         HttpResponse<String> response;
@@ -560,7 +560,7 @@ public class HTTPRequests {
         HttpRequest request = HttpRequest.newBuilder()
                 .uri(URI.create(BASE_URL + "relations/negative/" + contextId))
                 .header("Content-Type", "application/json")
-                .PUT(HttpRequest.BodyPublishers.ofString(jsonRequestBody))
+                .method("PATCH", HttpRequest.BodyPublishers.ofString(jsonRequestBody))
                 .build();
 
         HttpResponse<String> response;
@@ -682,10 +682,10 @@ public class HTTPRequests {
         return new Response<>(response.statusCode(), null);
     }
 
-    public static Response<SolutionDTO> updateSolutionByContextId(UUID contextId, SolutionDTO solutionDTO) {
+    public static Response<SolutionDTO> updateSolutionByContextId(UUID contextId, Solution solution) {
         String jsonRequestBody;
         try {
-            jsonRequestBody = OBJECT_MAPPER.writeValueAsString(solutionDTO);
+            jsonRequestBody = OBJECT_MAPPER.writeValueAsString(solution);
         } catch (Exception e) {
             return null;
         }
@@ -693,7 +693,7 @@ public class HTTPRequests {
         HttpRequest request = HttpRequest.newBuilder()
                 .uri(URI.create(BASE_URL + "solutions/" + contextId))
                 .header("Content-Type", "application/json")
-                .PUT(HttpRequest.BodyPublishers.ofString(jsonRequestBody))
+                .method("PATCH", HttpRequest.BodyPublishers.ofString(jsonRequestBody))
                 .build();
 
         HttpResponse<String> response;

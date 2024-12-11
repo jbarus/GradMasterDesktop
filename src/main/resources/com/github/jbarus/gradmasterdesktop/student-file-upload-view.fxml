@@ -5,7 +5,7 @@
 <?import javafx.scene.layout.AnchorPane?>
 
 
-<AnchorPane prefHeight="200.0" prefWidth="300.0" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.github.jbarus.gradmasterdesktop.controllers.StudentFileUploadController">
+<AnchorPane prefHeight="200.0" prefWidth="300.0" xmlns="http://javafx.com/javafx" xmlns:fx="http://javafx.com/fxml" fx:controller="com.github.jbarus.gradmasterdesktop.controllers.StudentFileUploadController">
    <children>
       <Button fx:id="nextButton" layoutX="243.0" layoutY="165.0" mnemonicParsing="false" onMouseClicked="#nextButtonClicked" text="Dalej" />
       <Button fx:id="chooseFileButton" layoutX="24.0" layoutY="98.0" mnemonicParsing="false" onMouseClicked="#chooseFileButtonClicked" text="Wybierz plik" />

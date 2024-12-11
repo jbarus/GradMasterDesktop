@@ -2,6 +2,7 @@ package com.github.jbarus.gradmasterdesktop.controllers;
 
 import com.github.jbarus.gradmasterdesktop.communication.HTTPRequests;
 import com.github.jbarus.gradmasterdesktop.context.Context;
+import com.github.jbarus.gradmasterdesktop.models.Solution;
 import com.github.jbarus.gradmasterdesktop.models.Student;
 import com.github.jbarus.gradmasterdesktop.models.UniversityEmployee;
 import com.github.jbarus.gradmasterdesktop.models.dto.SolutionDTO;
@@ -12,6 +13,7 @@ import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.input.MouseEvent;
+import javafx.stage.Stage;
 
 import java.time.LocalTime;
 
@@ -175,12 +177,15 @@ public class EditCommitteeController {
 
     @FXML
     void saveButtonClicked(MouseEvent event){
-        SolutionDTO solutionDTO = new SolutionDTO();
-        solutionDTO.setCommittees(Context.getInstance().getCommittees());
-        solutionDTO.setUnassignedStudents(Context.getInstance().getUnassignedStudents());
-        solutionDTO.setUnassignedUniversityEmployees(Context.getInstance().getUnassignedUniversityEmployee());
+        Solution solution = new Solution();
+        solution.setCommittees(Context.getInstance().getCommittees());
+        solution.setUnassignedStudents(Context.getInstance().getUnassignedStudents());
+        solution.setUnassignedUniversityEmployees(Context.getInstance().getUnassignedUniversityEmployee());
+        System.out.println(Context.getInstance().getUnassignedUniversityEmployee());
 
-        HTTPRequests.updateSolutionByContextId(Context.getInstance().getId(), solutionDTO);
+        HTTPRequests.updateSolutionByContextId(Context.getInstance().getId(), solution);
+        Stage currentStage = (Stage) saveButton.getScene().getWindow();
+        currentStage.close();
     }
 
 }

@@ -292,12 +292,11 @@ public class DetailsController {
         Committee committee = solutionTable.getSelectionModel().getSelectedItem();
         if(committee != null){
             Context.getInstance().getCommittees().remove(committee);
-            SolutionDTO solutionDTO = new SolutionDTO();
-            solutionDTO.setId(Context.getInstance().getId());
-            solutionDTO.setCommittees(Context.getInstance().getCommittees());
-            solutionDTO.setUnassignedStudents(Context.getInstance().getUnassignedStudents());
-            solutionDTO.setUnassignedUniversityEmployees(Context.getInstance().getUnassignedUniversityEmployee());
-            HTTPRequests.updateSolutionByContextId(Context.getInstance().getId(), solutionDTO);
+            Solution solution = new Solution();
+            solution.setCommittees(Context.getInstance().getCommittees());
+            solution.setUnassignedStudents(Context.getInstance().getUnassignedStudents());
+            solution.setUnassignedUniversityEmployees(Context.getInstance().getUnassignedUniversityEmployee());
+            HTTPRequests.updateSolutionByContextId(Context.getInstance().getId(), solution);
         }
     }
 

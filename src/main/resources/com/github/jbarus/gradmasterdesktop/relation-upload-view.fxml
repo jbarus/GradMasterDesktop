@@ -6,7 +6,7 @@
 <?import javafx.scene.control.TableView?>
 <?import javafx.scene.layout.AnchorPane?>
 
-<AnchorPane prefHeight="600.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.github.jbarus.gradmasterdesktop.controllers.RelationUploadController">
+<AnchorPane prefHeight="600.0" prefWidth="600.0" xmlns="http://javafx.com/javafx" xmlns:fx="http://javafx.com/fxml" fx:controller="com.github.jbarus.gradmasterdesktop.controllers.RelationUploadController">
    <children>
       <TableView fx:id="positiveUniversityEmployeeTable" layoutX="37.0" layoutY="63.0" prefHeight="200.0" prefWidth="200.0">
         <columns>
