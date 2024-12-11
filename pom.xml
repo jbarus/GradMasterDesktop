@@ -80,7 +80,7 @@
                         <id>default-cli</id>
                         <configuration>
                             <mainClass>
-                                com.github.jbarus.gradmasterdesktop.GradMasterDesktopApplication
+                                com.github.jbarus.gradmasterdesktop/com.github.jbarus.gradmasterdesktop.GradMasterDesktopApplication
                             </mainClass>
                             <launcher>app</launcher>
                             <jlinkZipName>app</jlinkZipName>
