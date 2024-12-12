@@ -49,7 +49,7 @@ public class UniversityEmployeeFileUploadController {
         selectedFile = fileChooser.showOpenDialog(stage);
 
         if (selectedFile != null) {
-            nameLabel.setText(selectedFile.getAbsolutePath()+selectedFile.getName());
+            nameLabel.setText("Wybrany plik: " + selectedFile.getName());
         }
 
     }

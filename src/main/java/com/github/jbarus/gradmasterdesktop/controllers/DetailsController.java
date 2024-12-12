@@ -148,7 +148,7 @@ public class DetailsController {
         initializeRelations();
         initializeProblemParameters();
         dateLabel.setText("Data: " + Context.getInstance().getDate().toString());
-        nameLabel.setText("Name: " + Context.getInstance().getName());
+        nameLabel.setText("Nazwa: " + Context.getInstance().getName());
 
     }
 
@@ -156,8 +156,8 @@ public class DetailsController {
         Response<ProblemParametersDTO> problemParametersDTOResponse = HTTPRequests.getProblemParametersByContextId(Context.getInstance().getId());
 
         if(problemParametersDTOResponse != null && problemParametersDTOResponse.getHTTPStatusCode() < 300){
-            numberOfPeoplePerCommitteeLabel.setText("Liczba pracowników w komisji: " + problemParametersDTOResponse.getBody().getCommitteeSize());
-            calculationTimeDetails.setText("Czas obliczeń: " + problemParametersDTOResponse.getBody().getCalculationTimeInSeconds());
+            numberOfPeoplePerCommitteeLabel.setText("Liczba pracowników w komisji: " + problemParametersDTOResponse.getBody().getProblemParameters().getCommitteeSize());
+            calculationTimeDetails.setText("Czas obliczeń: " + problemParametersDTOResponse.getBody().getProblemParameters().getCalculationTimeInSeconds());
         }
     }
 
@@ -222,14 +222,14 @@ public class DetailsController {
         Response<SolutionDTO> response =  HTTPRequests.getSolutionByContextId(Context.getInstance().getId());
 
         if(response != null && response.getHTTPStatusCode() < 300) {
-            if(response.getBody().getCommittees() != null) {
-                Context.getInstance().getCommittees().addAll(response.getBody().getCommittees());
+            if(response.getBody().getSolution().getCommittees() != null) {
+                Context.getInstance().getCommittees().addAll(response.getBody().getSolution().getCommittees());
             }
-            if(response.getBody().getUnassignedStudents() != null) {
-                Context.getInstance().getUnassignedStudents().addAll(response.getBody().getUnassignedStudents());
+            if(response.getBody().getSolution().getUnassignedStudents() != null) {
+                Context.getInstance().getUnassignedStudents().addAll(response.getBody().getSolution().getUnassignedStudents());
             }
-            if(response.getBody().getUnassignedUniversityEmployees() != null){
-                Context.getInstance().getUnassignedUniversityEmployee().addAll(response.getBody().getUnassignedUniversityEmployees());
+            if(response.getBody().getSolution().getUnassignedUniversityEmployees() != null){
+                Context.getInstance().getUnassignedUniversityEmployee().addAll(response.getBody().getSolution().getUnassignedUniversityEmployees());
             }
         }
 
@@ -352,8 +352,8 @@ public class DetailsController {
         Response<SolutionDTO> response = HTTPRequests.getSolutionByContextId(Context.getInstance().getId());
 
         if(response != null && response.getHTTPStatusCode() < 300 ){
-            Context.getInstance().getCommittees().addAll(response.getBody().getCommittees());
-            Context.getInstance().getUnassignedStudents().addAll(response.getBody().getUnassignedStudents());
+            Context.getInstance().getCommittees().addAll(response.getBody().getSolution().getCommittees());
+            Context.getInstance().getUnassignedStudents().addAll(response.getBody().getSolution().getUnassignedStudents());
         }
     }
 

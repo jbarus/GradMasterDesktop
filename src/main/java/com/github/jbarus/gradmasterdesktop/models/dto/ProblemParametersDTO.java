@@ -1,5 +1,6 @@
 package com.github.jbarus.gradmasterdesktop.models.dto;
 
+import com.github.jbarus.gradmasterdesktop.models.ProblemParameters;
 import lombok.*;
 
 import java.util.UUID;
@@ -11,7 +12,5 @@ import java.util.UUID;
 @Builder
 public class ProblemParametersDTO {
     private UUID id;
-    private int committeeSize;
-    private int maxNumberOfNonHabilitatedEmployees;
-    private int calculationTimeInSeconds;
+    private ProblemParameters problemParameters;
 }

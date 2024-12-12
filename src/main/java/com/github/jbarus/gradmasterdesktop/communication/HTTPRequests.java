@@ -97,7 +97,7 @@ public class HTTPRequests {
         return new Response<>(response.statusCode(),null);
     }
 
-    public static Response<List<UniversityEmployee>> updateUniversityEmployeeByContextId(UUID contextId, List<UniversityEmployee> universityEmployees){
+    public static Response<UniversityEmployeeDTO> updateUniversityEmployeeByContextId(UUID contextId, List<UniversityEmployee> universityEmployees){
 
         String jsonRequestBody;
         try {
@@ -119,10 +119,11 @@ public class HTTPRequests {
             return null;
         }
 
+        UniversityEmployeeDTO universityEmployeeDTO;
         if(response.statusCode() < 300){
             try{
-                universityEmployees = OBJECT_MAPPER.readValue(response.body(), new TypeReference<List<UniversityEmployee>>(){});
-                return new Response<>(response.statusCode(),universityEmployees);
+                universityEmployeeDTO = OBJECT_MAPPER.readValue(response.body(), UniversityEmployeeDTO.class);
+                return new Response<>(response.statusCode(),universityEmployeeDTO);
             }catch (Exception e){
                 return null;
             }
@@ -670,10 +671,12 @@ public class HTTPRequests {
         } catch (Exception e) {
             return null;
         }
-
+        System.out.println(response.statusCode());
         if (response.statusCode() < 300) {
             try {
+                System.out.println("Jeszcze działa");
                 SolutionDTO solution = OBJECT_MAPPER.readValue(response.body(), SolutionDTO.class);
+                System.out.println("To po funkcji");
                 return new Response<>(response.statusCode(), solution);
             } catch (Exception e) {
                 return null;
