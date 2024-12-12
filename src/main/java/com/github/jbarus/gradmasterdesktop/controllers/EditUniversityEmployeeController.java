@@ -81,10 +81,8 @@ public class EditUniversityEmployeeController {
 
             if (relation.getUniversityEmployee1().getId().equals(source.getId())) {
                 relations.set(i, new UniversityEmployeeRelation(target, relation.getUniversityEmployee2()));
-                System.out.println("Bingo1");
             } else if (relation.getUniversityEmployee2() != null && relation.getUniversityEmployee2().getId().equals(source.getId())) {
                 relations.set(i, new UniversityEmployeeRelation(relation.getUniversityEmployee1(), target));
-                System.out.println("Bingo2");
             }
         }
     }

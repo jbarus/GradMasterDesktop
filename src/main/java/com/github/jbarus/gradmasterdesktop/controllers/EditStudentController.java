@@ -36,7 +36,6 @@ public class EditStudentController {
         int index = Context.getInstance().getStudents().indexOf(selectedStudent);
         Context.getInstance().getStudents().set(index, student);
         Response<StudentDTO> response = HTTPRequests.updateStudentsByContextId(Context.getInstance().getId(), Context.getInstance().getStudents());
-        System.out.println(response.getHTTPStatusCode());
         Stage currentStage = (Stage) saveButton.getScene().getWindow();
         currentStage.close();
     }

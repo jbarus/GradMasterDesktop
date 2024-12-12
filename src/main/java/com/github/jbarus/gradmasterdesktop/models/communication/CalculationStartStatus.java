@@ -32,7 +32,6 @@ public enum CalculationStartStatus {
         Integer statusCode = (Integer) json.get("statusCode");
         for (CalculationStartStatus status : values()) {
             if (status.statusCode == statusCode) {
-                System.out.println("Siema "+ status);
                 return status;
             }
         }

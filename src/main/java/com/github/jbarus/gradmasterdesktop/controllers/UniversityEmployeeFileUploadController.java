@@ -62,7 +62,6 @@ public class UniversityEmployeeFileUploadController {
             response = HTTPRequests.uploadUniversityEmployeesFileByContextId(contextId, selectedFile);
         }
         if(response != null && response.getHTTPStatusCode() < 300){
-            System.out.println(response.getHTTPStatusCode());
             try {
                 FXMLLoader fxmlLoader = new FXMLLoader(GradMasterDesktopApplication.class.getResource("student-file-upload-view.fxml"));
                 Scene scene = new Scene(fxmlLoader.load());

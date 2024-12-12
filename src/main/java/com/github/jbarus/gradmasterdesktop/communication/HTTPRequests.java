@@ -671,12 +671,9 @@ public class HTTPRequests {
         } catch (Exception e) {
             return null;
         }
-        System.out.println(response.statusCode());
         if (response.statusCode() < 300) {
             try {
-                System.out.println("Jeszcze działa");
                 SolutionDTO solution = OBJECT_MAPPER.readValue(response.body(), SolutionDTO.class);
-                System.out.println("To po funkcji");
                 return new Response<>(response.statusCode(), solution);
             } catch (Exception e) {
                 return null;

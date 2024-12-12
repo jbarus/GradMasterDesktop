@@ -181,7 +181,6 @@ public class EditCommitteeController {
         solution.setCommittees(Context.getInstance().getCommittees());
         solution.setUnassignedStudents(Context.getInstance().getUnassignedStudents());
         solution.setUnassignedUniversityEmployees(Context.getInstance().getUnassignedUniversityEmployee());
-        System.out.println(Context.getInstance().getUnassignedUniversityEmployee());
 
         HTTPRequests.updateSolutionByContextId(Context.getInstance().getId(), solution);
         Stage currentStage = (Stage) saveButton.getScene().getWindow();
