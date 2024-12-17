@@ -10,26 +10,26 @@
    <children>
       <TableView fx:id="positiveUniversityEmployeeTable" layoutX="37.0" layoutY="63.0" prefHeight="200.0" prefWidth="200.0">
         <columns>
-          <TableColumn fx:id="positiveUniversityEmployeeFirstnameColumn" prefWidth="100.0" text="C1" />
-          <TableColumn fx:id="positiveUniversityEmployeeSecondnameColumn" prefWidth="99.0" text="C2" />
+          <TableColumn fx:id="positiveUniversityEmployeeFirstnameColumn" prefWidth="100.0" text="Imię" />
+          <TableColumn fx:id="positiveUniversityEmployeeSecondnameColumn" prefWidth="99.0" text="Nazwisko" />
         </columns>
       </TableView>
       <TableView fx:id="positiveRelationTable" layoutX="361.0" layoutY="63.0" prefHeight="200.0" prefWidth="200.0">
         <columns>
-          <TableColumn fx:id="positiveRelationFirstnameColumn" prefWidth="99.0" text="C1" />
-          <TableColumn fx:id="positiveRelationSecondnameColumn" prefWidth="100.0" text="C2" />
+          <TableColumn fx:id="positiveRelationFirstnameColumn" prefWidth="99.0" text="Imię" />
+          <TableColumn fx:id="positiveRelationSecondnameColumn" prefWidth="100.0" text="Nazwisko" />
         </columns>
       </TableView>
       <TableView fx:id="negativeUniversityEmployeeTable" layoutX="38.0" layoutY="337.0" prefHeight="200.0" prefWidth="200.0">
          <columns>
-            <TableColumn fx:id="negativeUniversityEmployeeFirstnameColumn" prefWidth="105.0" text="C1" />
-            <TableColumn fx:id="negativeUniversityEmployeeSecondnameColumn" prefWidth="94.0" text="C2" />
+            <TableColumn fx:id="negativeUniversityEmployeeFirstnameColumn" prefWidth="105.0" text="Imię" />
+            <TableColumn fx:id="negativeUniversityEmployeeSecondnameColumn" prefWidth="94.0" text="Nazwisko" />
          </columns>
       </TableView>
       <TableView fx:id="negativeRelationTable" layoutX="362.0" layoutY="337.0" prefHeight="200.0" prefWidth="200.0">
          <columns>
-            <TableColumn fx:id="negativeRelationFirstnameColumn" prefWidth="98.0" text="C1" />
-            <TableColumn fx:id="negativeRelationSecondnameColumn" prefWidth="101.0" text="C2" />
+            <TableColumn fx:id="negativeRelationFirstnameColumn" prefWidth="98.0" text="Imię" />
+            <TableColumn fx:id="negativeRelationSecondnameColumn" prefWidth="101.0" text="Nazwisko" />
          </columns>
       </TableView>
       <Button fx:id="moveFromPositiveRelationButton" layoutX="288.0" layoutY="125.0" mnemonicParsing="false" onMouseClicked="#moveFromPositiveRelationButtonClicked" text="&lt;" />
@@ -37,7 +37,7 @@
       <Button fx:id="moveFromNegativeRelationButton" layoutX="288.0" layoutY="399.0" mnemonicParsing="false" onMouseClicked="#moveFromNegativeRelationButtonClicked" text="&lt;" />
       <Button fx:id="moveToNegativeRelationButton" layoutX="288.0" layoutY="450.0" mnemonicParsing="false" onMouseClicked="#moveToNegativeRelationButtonClicked" text="&gt;" />
       <Button fx:id="nextButton" layoutX="526.0" layoutY="561.0" mnemonicParsing="false" onMouseClicked="#nextButtonClicked" text="Zakończ" />
-      <Label layoutX="37.0" layoutY="35.0" text="Relacje pozytywne:" />
-      <Label layoutX="37.0" layoutY="307.0" text="Relacje negatywne:" />
+      <Label layoutX="37.0" layoutY="35.0" text="Preferują pracować razem:" />
+      <Label layoutX="37.0" layoutY="307.0" text="Preferują nie pracować razem:" />
    </children>
 </AnchorPane>

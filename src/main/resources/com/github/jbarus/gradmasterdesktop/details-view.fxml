@@ -73,7 +73,7 @@
       <Button fx:id="backButton" layoutX="827.0" layoutY="724.0" mnemonicParsing="false" onMouseClicked="#backButtonClicked" prefHeight="48.0" prefWidth="145.0" text="Wróć" />
       <Label layoutX="80.0" layoutY="75.0" text="Lista pracowników uczelni:" />
       <Label layoutX="600.0" layoutY="75.0" text="Lista studentów:" />
-      <Label layoutX="865.0" layoutY="42.0" text="Pozytywne relacje:" />
-      <Label layoutX="865.0" layoutY="234.0" text="Negatywne relacje:" />
+      <Label layoutX="865.0" layoutY="42.0" text="Preferują pracować razem:" />
+      <Label layoutX="865.0" layoutY="234.0" text="Preferują nie pracować razem:" />
    </children>
 </AnchorPane>
